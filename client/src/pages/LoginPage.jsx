@@ -1,9 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios"
 import toast from "react-hot-toast";
+import { setLogin } from "../redux/state";
+import {useDispatch} from "react-redux"
 
 const LoginPage = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -20,10 +24,18 @@ const LoginPage = () => {
     e.preventDefault();
     try{
         const response = await axios.post("http://localhost:3001/api/login", {email , password})
-        console.log(response.data)
+        const {user , token } = response.data;
+        console.log("USER " , user)
+        console.log("Token" , token)
+        if (response.status === 200) {
+            dispatch(setLogin({ user, token }));
+            toast.success("Login successful");
+            Navigate('/')
+          }
+
     }catch(error){
         console.log(error)
-        toast.error("Invalid credentials")
+        toast.error("Invalid credentials Login failed")
     }
   };
 
