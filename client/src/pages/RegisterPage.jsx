@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 import { FaCloudUploadAlt } from 'react-icons/fa';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
+import { toast} from "react-hot-toast"
+import axios from "axios"
+
 
 const RegisterPage = () => {
+    const Navigate = useNavigate();
     const [formdata , setFormdata] = useState({
         firstName : "",
         lastName : "",
@@ -22,6 +27,55 @@ const RegisterPage = () => {
    }
 
 //    console.log(formdata)
+useEffect(() => {
+    setPasswordMatch(formdata.password === formdata.confirmPassword && formdata.password !== "" ? true : false);
+  }, [formdata.password, formdata.confirmPassword]);
+
+const [passwordMatch , setPasswordMatch] = useState(true)
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const formData = new FormData();
+        for (const key in formdata) {
+            formData.append(key, formdata[key]);
+        }
+        const response = await axios.post("http://localhost:3001/api/register", formData);
+        console.log(response.data);
+
+        if (response.status === 200) {
+            toast.success("User registered successfully!", {
+                duration: 3000, 
+                position: "top-center",
+            });
+            Navigate("/login");
+        } else {
+            toast.error("Registration failed. Please try again.", {
+                duration: 3000,
+                position: "top-center",
+            });
+        }
+    } catch (err) {
+        console.error("Error registering", err);
+        if (err.response && err.response.status === 409) {
+            toast.error("User already exists. Please use a different email.", {
+                duration: 3000,
+                position: "top-center",
+            });
+        } else if (err.response && err.response.status === 400) {
+            toast.error("Profile image is required.", {
+                duration: 3000,
+                position: "top-center",
+            });
+        } else {
+            toast.error("Registration failed. Please try again.", {
+                duration: 3000,
+                position: "top-center",
+            });
+        }
+    }
+};
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="bg-white p-8 rounded-lg shadow-md md:w-[55%] w-full">
@@ -31,7 +85,7 @@ const RegisterPage = () => {
                 className="w-36 h-36 rounded-full mb-4"
                  />
             )}
-        <form className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="border-b-2 border-gradient pb-2 mb-4">
             <input
               type="text"
@@ -97,6 +151,10 @@ const RegisterPage = () => {
             />
           </div>
 
+          {!passwordMatch && (
+            <p className="text-red-500">Passwords do not match</p>
+          )}
+
           <label htmlFor="image" className="text-gray-600 flex items-center">
             <FaCloudUploadAlt className="mr-2" /> Upload Profile Picture
           </label>
@@ -115,6 +173,7 @@ const RegisterPage = () => {
           <button
             type="submit"
             className="bg-blue-500 text-white rounded-full py-3 px-6 hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+            disabled={!passwordMatch}
           >
             Register
           </button>

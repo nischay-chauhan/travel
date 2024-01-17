@@ -1,30 +1,42 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios"
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
-  const [formdata, setFormdata] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormdata({
-      ...formdata,
-      [name]: value,
-    });
+    if (name === "email") {
+      setEmail(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try{
+        const response = await axios.post("http://localhost:3001/api/login", {email , password})
+        console.log(response.data)
+    }catch(error){
+        console.log(error)
+        toast.error("Invalid credentials")
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="bg-white p-8  rounded-lg shadow-md md:w-[55%] w-full">
-        <form className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="border-b-2 border-gradient pb-2 mb-4">
             <input
               type="email"
               id="email"
               name="email"
-              value={formdata.email}
+              value={email}
               onChange={handleChange}
               className="w-full text-xl h-12 rounded p-4 focus:outline-none focus:border-blue-500 focus:border-brightness-110"
               required
@@ -37,7 +49,7 @@ const LoginPage = () => {
               type="password"
               id="password"
               name="password"
-              value={formdata.password}
+              value={password}
               onChange={handleChange}
               className="w-full h-12 p-4 rounded focus:outline-none focus:border-blue-500 text-xl focus:border-brightness-110"
               required
