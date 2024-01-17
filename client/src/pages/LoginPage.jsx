@@ -41,7 +41,8 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="bg-white p-8  rounded-lg shadow-md md:w-[55%] w-full">
+      <div className="bg-white p-8  rounded-lg flex flex-col justify-center items-center shadow-md md:w-[55%]  ">
+        <h1 className="text-3xl font-bold mb-6">LOGIN HERE </h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="border-b-2 border-gradient pb-2 mb-4">
             <input
