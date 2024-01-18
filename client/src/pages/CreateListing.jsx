@@ -25,6 +25,23 @@ const CreateListing = () => {
   const [bedCount, setBedCount] = useState(1);
   const [bathroomCount, setBathroomCount] = useState(1);
 
+  const [formDescription, setFormDescription] = useState({
+    title: "",
+    description: "",
+    highlight: "",
+    highlightDesc: "",
+    price: 0,
+  });
+
+  const handleSelectAmenities = (facility) => {
+    if (amenities.includes(facility)) {
+      setAmenities((prevAmenities) =>
+        prevAmenities.filter((option) => option !== facility)
+      );
+    } else {
+      setAmenities((prev) => [...prev, facility]);
+    }
+  };
 
   const handleUploadPhotos = (e) => {
     const newPhotos = e.target.files;
@@ -44,6 +61,14 @@ const CreateListing = () => {
     setPhotos((prevPhotos) =>
       prevPhotos.filter((_, index) => index !== indexToRemove)
     );
+  };
+
+  const handleChangeDescription = (e) => {
+    const { name, value } = e.target;
+    setFormDescription({
+      ...formDescription,
+      [name]: value,
+    });
   };
 
   return (
@@ -154,11 +179,16 @@ const CreateListing = () => {
             <div className="grid gap-4 md:grid-cols-3">
               {facilities?.map((item, index) => (
                 <div
-                  className="flex hover:cursor-pointer justify-between items-center bg-gray-200 p-4 rounded-md mb-2 transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                  className={`flex hover:cursor-pointer justify-between items-center bg-gray-200 p-4 rounded-md mb-2 h-24  transition-transform duration-300 hover:scale-105 hover:shadow-lg ${
+                    amenities.includes(item.name)
+                      ? "border-4 border-blue-500"
+                      : ""
+                  }`}
                   key={index}
+                  onClick={() => handleSelectAmenities(item.name)}
                 >
-                  <div className="text-2xl">{item.icon}</div>
-                  <p>{item.name}</p>
+                  <div className="text-2xl ">{item.icon}</div>
+                  <p className="text-lg">{item.name}</p>
                 </div>
               ))}
             </div>
@@ -263,6 +293,8 @@ const CreateListing = () => {
                     type="text"
                     placeholder="Title..."
                     name="title"
+                    value={formDescription.title}
+                    onChange={handleChangeDescription}
                     required
                   />
                 </div>
@@ -273,6 +305,8 @@ const CreateListing = () => {
                     type="text"
                     placeholder="Description..."
                     name="description"
+                    value={formDescription.description}
+                    onChange={handleChangeDescription}
                     required
                   />
                 </div>
@@ -283,6 +317,8 @@ const CreateListing = () => {
                     type="text"
                     placeholder="Highlight..."
                     name="highlight"
+                    value={formDescription.highlight}
+                    onChange={handleChangeDescription}
                     required
                   />
                 </div>
@@ -292,7 +328,9 @@ const CreateListing = () => {
                     className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
                     type="text"
                     placeholder="Highlight Details..."
-                    name="highlightDescription"
+                    name="highlightDesc"
+                    value={formDescription.highlightDesc}
+                    onChange={handleChangeDescription}
                     required
                   />
                 </div>
@@ -305,12 +343,20 @@ const CreateListing = () => {
                       type="number"
                       placeholder="20"
                       name="price"
+                      value={formDescription.price}
+                      onChange={handleChangeDescription}
                       required
                     />
                   </div>
                 </div>
               </div>
             </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+            >
+              CREATE YOUR LISTING
+            </button>
           </div>
         </form>
       </div>
