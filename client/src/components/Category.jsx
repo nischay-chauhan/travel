@@ -120,8 +120,8 @@ const Categories = () => {
 
   return (
     <div className="categories bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-4 text-center">Explore Top Categories</h1>
-      <p className="text-gray-600 mb-8 text-center">
+      <h1 className="text-4xl font-bold mb-4 text-center">Explore Top Categories</h1>
+      <p className="text-gray-600 mb-8 text-xl text-center">
         Explore our wide range of vacation rentals that cater to all types of travelers. Immerse yourself in the local culture, enjoy the comforts of home, and create unforgettable memories in your dream destination.
       </p>
 

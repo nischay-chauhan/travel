@@ -31,25 +31,7 @@ import {
 import { AiFillCar } from "react-icons/ai";
 
 
-export const types = [
-  {
-    name: "An entire place",
-    description: "Guests have the whole place to themselves",
-    icon: <FaHouseUser />,
-  },
-  {
-    name: "Room(s)",
-    description:
-      "Guests have their own room in a house, plus access to shared places",
-    icon: <BsFillDoorOpenFill />,
-  },
-  {
-    name: "A Shared Room",
-    description:
-      "Guests sleep in a room or common area that maybe shared with you or others",
-    icon: <FaPeopleRoof />,
-  },
-];
+
 
 export const facilities = [
   {
