@@ -8,6 +8,23 @@ import { BiTrash, BiUpload } from "react-icons/bi";
 
 const CreateListing = () => {
   const [photos, setPhotos] = useState([]);
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [amenities, setAmenities] = useState([]);
+
+  const [formLocation, setFormLocation] = useState({
+    streetAddress: "",
+    aptSuite: "",
+    city: "",
+    province: "",
+    country: "",
+  });
+
+  const [guestCount, setGuestCount] = useState(1);
+  const [bedroomCount, setBedroomCount] = useState(1);
+  const [bedCount, setBedCount] = useState(1);
+  const [bathroomCount, setBathroomCount] = useState(1);
+
 
   const handleUploadPhotos = (e) => {
     const newPhotos = e.target.files;
@@ -53,20 +70,24 @@ const CreateListing = () => {
               </h3>
             </div>
             <div className="flex flex-wrap justify-center">
-              {categories.map((item, index) => (
+              {categories?.map((item, index) => (
                 <div
                   key={index}
-                  className="w-36 h-24 m-2 relative overflow-hidden rounded-md transition-transform duration-300 transform hover:scale-105"
+                  onClick={() => setCategory(item.label)}
+                  className={`w-36 h-24 m-2 relative overflow-hidden rounded-md transition-transform duration-300 transform hover:scale-105 category ${
+                    category === item.label ? "border-4 border-red-500" : ""
+                  }`}
                 >
-                  <div className="absolute inset-0  bg-black opacity-70 transition-opacity duration-300 hover:opacity-0"></div>
-                  <div className="absolute  inset-0 flex items-center justify-center">
-                    <div className="text-white  text-center">
+                  <div className="absolute inset-0 bg-black opacity-70 transition-opacity duration-300 hover:opacity-0"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-white text-center">
                       <div className="text-2xl">{item.icon}</div>
                       <p className="mt-2">{item.label}</p>
                     </div>
                   </div>
                 </div>
               ))}
+
               <div className="mt-4 w-full">
                 <h2 className="text-2xl font-bold">
                   What type of Places will guests have ?
@@ -76,7 +97,10 @@ const CreateListing = () => {
                 {types?.map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center bg-gray-200 p-4 rounded-md mb-2"
+                    className={`flex justify-between items-center bg-gray-200 p-4 rounded-md mb-2 type ${
+                      type === item.name ? "border-4 border-green-500" : ""
+                    }`}
+                    onClick={() => setType(item.name)}
                   >
                     <div className="flex flex-col">
                       <h4 className="text-xl font-bold">{item.name}</h4>
@@ -86,18 +110,37 @@ const CreateListing = () => {
                   </div>
                 ))}
               </div>
-              <Place />
+              <Place
+                formLocation={formLocation}
+                setFormLocation={setFormLocation}
+              />
               <div className="flex w-full flex-col mt-6">
                 <div className="flex flex-col">
                   <h3 className="text-2xl font-bold mr-4">
                     Share some basics about Your Place
                   </h3>
                 </div>
-                <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-2 mt-4">
-                  <GuestCounter name={"Guests"} />
-                  <GuestCounter name={"Bedrooms"} />
-                  <GuestCounter name={"Beds"} />
-                  <GuestCounter name={"Bathrooms"} />
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-2 mt-4">
+                  <GuestCounter
+                    label="Guests"
+                    count={guestCount}
+                    setCount={setGuestCount}
+                  />
+                  <GuestCounter
+                    label="Bedrooms"
+                    count={bedroomCount}
+                    setCount={setBedroomCount}
+                  />
+                  <GuestCounter
+                    label="Beds"
+                    count={bedCount}
+                    setCount={setBedCount}
+                  />
+                  <GuestCounter
+                    label="Bathrooms"
+                    count={bathroomCount}
+                    setCount={setBathroomCount}
+                  />
                 </div>
               </div>
             </div>

@@ -1,40 +1,43 @@
-import  { useState } from 'react';
 import PropTypes from 'prop-types';
-import { IoRemoveCircleOutline, IoAddCircleOutline } from 'react-icons/io5';
+import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 
-const GuestCounter = ({ name }) => {
-  const [count, setCount] = useState(1);
-
+const GuestCounter = ({ label, count, setCount }) => {
   const handleIncrement = () => {
-    setCount(count + 1);
+    setCount((prevCount) => prevCount + 1);
   };
 
   const handleDecrement = () => {
     if (count > 1) {
-      setCount(count - 1);
+      setCount((prevCount) => prevCount - 1);
     }
   };
-
+  
   return (
-    <div className="relative bg-gray-100 p-4 w-1/2 rounded-md items-center mb-4">
-      <p className="text-2xl mr-4">{name}</p>
+    <div className="flex items-center justify-between p-2 bg-gray-200 rounded-md">
+      <p className="text-lg">{label}</p>
       <div className="flex items-center">
-        <IoRemoveCircleOutline
-          className="text-2xl hover:cursor-pointer"
-          onClick={handleDecrement}
-        />
-        <span className="text-2xl mx-4">{count}</span>
-        <IoAddCircleOutline
-          className="text-2xl hover:cursor-pointer"
+        <button
+          className="bg-blue-500 text-white px-2 py-1 rounded-md"
           onClick={handleIncrement}
-        />
+        >
+          <AiOutlinePlus size={20} />
+        </button>
+        <span className="mx-2">{count}</span>
+        <button
+          className="bg-red-500 text-white px-2 py-1 rounded-md"
+          onClick={handleDecrement}
+        >
+          <AiOutlineMinus size={20} />
+        </button>
       </div>
     </div>
   );
 };
 
 GuestCounter.propTypes = {
-  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number.isRequired,
+  setCount: PropTypes.func.isRequired,
 };
 
 export default GuestCounter;
