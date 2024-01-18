@@ -5,8 +5,11 @@ import Place from "../components/CreateListing/Place";
 import GuestCounter from "../components/CreateListing/GuestCounter";
 import { useState } from "react";
 import { BiTrash, BiUpload } from "react-icons/bi";
-
+import {useSelector} from "react-redux"
+import {useNavigate} from "react-router-dom"
+import axios from "axios"
 const CreateListing = () => {
+  const Navigate = useNavigate()
   const [photos, setPhotos] = useState([]);
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
@@ -71,6 +74,51 @@ const CreateListing = () => {
     });
   };
 
+const creatorId = useSelector((state) => state.user._id)
+
+const handleSubmit = async(e) => {
+    e.preventDefault();
+    try{
+        const listingForm = new FormData();
+        listingForm.append("creator", creatorId);
+        listingForm.append("category", category);
+        listingForm.append("type", type);
+        listingForm.append("streetAddress", formLocation.streetAddress);
+        listingForm.append("aptSuite", formLocation.aptSuite);
+        listingForm.append("city", formLocation.city);
+        listingForm.append("province", formLocation.province);
+        listingForm.append("country", formLocation.country);
+        listingForm.append("guestCount", guestCount);
+        listingForm.append("bedroomCount", bedroomCount);
+        listingForm.append("bedCount", bedCount);
+        listingForm.append("bathroomCount", bathroomCount);
+        listingForm.append("amenities", amenities);
+        listingForm.append("title", formDescription.title);
+        listingForm.append("description", formDescription.description);
+        listingForm.append("highlight", formDescription.highlight);
+        listingForm.append("highlightDesc", formDescription.highlightDesc);
+        listingForm.append("price", formDescription.price);
+
+        photos.forEach((photo) => {
+            listingForm.append("listingPhotos" , photo)
+        })
+
+        const response = await axios.post('http://localhost:3001/properties/create', listingForm, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log(response.data);
+
+    if(response.status === 200){
+        Navigate('/')
+    }
+
+    }catch(error){
+        console.log(error)
+    }
+}
+
   return (
     <>
       <Navbar />
@@ -87,7 +135,7 @@ const CreateListing = () => {
             Publish Your Place
           </p>
         </div>
-        <form className="mt-10  m-4 flex flex-col">
+        <form onSubmit={handleSubmit} className="mt-10  m-4 flex flex-col">
           <div className="border border-gray-300 p-4">
             <div className="mb-4">
               <h3 className="text-2xl font-bold">

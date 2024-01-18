@@ -165,6 +165,10 @@ const Navbar = () => {
             <div className="space-y-4">
               {user ? (
                 <div className="flex flex-col space-y-3">
+                  <Link to={`/create-listing`} className="block text-xl hover:text-gray-500">
+                    Create Listing
+                  </Link>
+
                   <Link to={``} className="block text-xl hover:text-gray-500">
                     Trip List
                   </Link>
