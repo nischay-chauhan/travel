@@ -56,10 +56,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        <Link
-          to={user ? "" : "/login"}
-          className="hover:text-gray-500"
-        >
+        <Link to={user ? "" : "/login"} className="hover:text-gray-500">
           Become A Host
         </Link>
 
@@ -84,7 +81,7 @@ const Navbar = () => {
             />
           )}
           {dropdownMenu && (
-            <div className="absolute top-14 w-max right-0 bg-gray-800  space-y-2 p-8 max-w-xl">
+            <div className="absolute top-14 z-10 w-max right-0 bg-gray-800  space-y-2 p-8 max-w-xl">
               {!user ? (
                 <div className="flex flex-col ">
                   <Link
@@ -102,34 +99,19 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="flex flex-col space-y-3">
-                  <Link
-                    to={``}
-                    className="block text-xl hover:text-gray-500"
-                  >
+                  <Link to={``} className="block text-xl hover:text-gray-500">
                     Trip List
                   </Link>
-                  <Link
-                    to={``}
-                    className="block text-xl hover:text-gray-500"
-                  >
+                  <Link to={``} className="block text-xl hover:text-gray-500">
                     Wish List
                   </Link>
-                  <Link
-                    to={``}
-                    className="block text-xl hover:text-gray-500"
-                  >
+                  <Link to={``} className="block text-xl hover:text-gray-500">
                     Property List
                   </Link>
-                  <Link
-                    to={``}
-                    className="block text-xl hover:text-gray-500"
-                  >
+                  <Link to={``} className="block text-xl hover:text-gray-500">
                     Reservation List
                   </Link>
-                  <Link
-                    to=""
-                    className="block text-xl hover:text-gray-500"
-                  >
+                  <Link to="" className="block text-xl hover:text-gray-500">
                     Become A Host
                   </Link>
                   <Link
@@ -150,85 +132,90 @@ const Navbar = () => {
       </div>
 
       {isSidebarOpen && (
-        <div className="lg:hidden fixed top-0 left-0 h-full w-3/5 bg-gray-800">
-            
+        <div className="lg:hidden z-10 fixed top-0 left-0 h-full w-3/5 bg-gray-800">
           <div className="p-8">
-            
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src={user ? `http://localhost:3001/${user.profileImagePath.replace("public", "")}` : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                src={
+                  user
+                    ? `http://localhost:3001/${user.profileImagePath.replace(
+                        "public",
+                        ""
+                      )}`
+                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                }
                 alt="profile photo"
                 className="w-16 h-16 object-cover rounded-full"
               />
-             
+              <h3 className="text-white text-lg">
+                {user ? user.username : "Guest"}
+              </h3>
 
-            
-              <h3 className="text-white text-lg">{user ? user.username : "Guest"}</h3>
+              <input
+                type="text"
+                placeholder="Search..."
+                className="px-2 py-1 border border-gray-500 rounded-md focus:outline-none"
+              />
+
+              <button className="text-xl text-white hover:text-gray-500">
+                Search
+              </button>
             </div>
+
             <div className="space-y-4">
               {user ? (
-                 <div className="flex flex-col space-y-3">
-                 <Link
-                   to={``}
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Trip List
-                 </Link>
-                 <Link
-                   to={``}
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Wish List
-                 </Link>
-                 <Link
-                   to={``}
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Property List
-                 </Link>
-                 <Link
-                   to={``}
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Reservation List
-                 </Link>
-                 <Link
-                   to=""
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Become A Host
-                 </Link>
-                 <Link
-                   to="/login"
-                   onClick={() => {
-                     dispatch(setLogout());
-                     setDropdownMenu(false);
-                   }}
-                   className="block text-xl hover:text-gray-500"
-                 >
-                   Log Out
-                 </Link>
-               </div>
+                <div className="flex flex-col space-y-3">
+                  <Link to={``} className="block text-xl hover:text-gray-500">
+                    Trip List
+                  </Link>
+                  <Link to={``} className="block text-xl hover:text-gray-500">
+                    Wish List
+                  </Link>
+                  <Link to={``} className="block text-xl hover:text-gray-500">
+                    Property List
+                  </Link>
+                  <Link to={``} className="block text-xl hover:text-gray-500">
+                    Reservation List
+                  </Link>
+                  <Link to="" className="block text-xl hover:text-gray-500">
+                    Become A Host
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => {
+                      dispatch(setLogout());
+                      setDropdownMenu(false);
+                    }}
+                    className="block text-xl hover:text-gray-500"
+                  >
+                    Log Out
+                  </Link>
+                </div>
               ) : (
                 <>
-                  <Link to="/login" className="text-xl text-white hover:text-gray-500 block">
+                  <Link
+                    to="/login"
+                    className="text-xl text-white hover:text-gray-500 block"
+                  >
                     Log In
                   </Link>
-                  <Link to="/register" className="text-xl text-white hover:text-gray-500 block">
+                  <Link
+                    to="/register"
+                    className="text-xl text-white hover:text-gray-500 block"
+                  >
                     Sign Up
                   </Link>
                 </>
               )}
             </div>
             <div className=" rounded-full">
-            <button
-              onClick={toggleSidebar}
-              className="text-xl text-red-500 rounded mt-3 "
-            >
-              Close
-            </button>
+              <button
+                onClick={toggleSidebar}
+                className="text-xl text-red-500 rounded mt-3 "
+              >
+                Close
+              </button>
             </div>
-       
           </div>
         </div>
       )}
