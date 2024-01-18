@@ -17,6 +17,7 @@ const GuestCounter = ({ label, count, setCount }) => {
       <p className="text-lg">{label}</p>
       <div className="flex items-center">
         <button
+        type='button'
           className="bg-blue-500 text-white px-2 py-1 rounded-md"
           onClick={handleIncrement}
         >
@@ -24,6 +25,7 @@ const GuestCounter = ({ label, count, setCount }) => {
         </button>
         <span className="mx-2">{count}</span>
         <button
+        type='button'
           className="bg-red-500 text-white px-2 py-1 rounded-md"
           onClick={handleDecrement}
         >

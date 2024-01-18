@@ -7,6 +7,7 @@ import { useState } from "react";
 import { BiTrash, BiUpload } from "react-icons/bi";
 import {useSelector} from "react-redux"
 import {useNavigate} from "react-router-dom"
+import {toast , Toaster} from "react-hot-toast"
 import axios from "axios"
 const CreateListing = () => {
   const Navigate = useNavigate()
@@ -75,54 +76,84 @@ const CreateListing = () => {
   };
 
 const creatorId = useSelector((state) => state.user._id)
-
-const handleSubmit = async(e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-        const listingForm = new FormData();
-        listingForm.append("creator", creatorId);
-        listingForm.append("category", category);
-        listingForm.append("type", type);
-        listingForm.append("streetAddress", formLocation.streetAddress);
-        listingForm.append("aptSuite", formLocation.aptSuite);
-        listingForm.append("city", formLocation.city);
-        listingForm.append("province", formLocation.province);
-        listingForm.append("country", formLocation.country);
-        listingForm.append("guestCount", guestCount);
-        listingForm.append("bedroomCount", bedroomCount);
-        listingForm.append("bedCount", bedCount);
-        listingForm.append("bathroomCount", bathroomCount);
-        listingForm.append("amenities", amenities);
-        listingForm.append("title", formDescription.title);
-        listingForm.append("description", formDescription.description);
-        listingForm.append("highlight", formDescription.highlight);
-        listingForm.append("highlightDesc", formDescription.highlightDesc);
-        listingForm.append("price", formDescription.price);
-
-        photos.forEach((photo) => {
-            listingForm.append("listingPhotos" , photo)
-        })
-
-        const response = await axios.post('http://localhost:3001/properties/create', listingForm, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    console.log(response.data);
-
-    if(response.status === 200){
-        Navigate('/')
+    try {
+      const listingForm = new FormData();
+      listingForm.append("creator", creatorId);
+      listingForm.append("category", category);
+      listingForm.append("type", type);
+      listingForm.append("streetAddress", formLocation.streetAddress);
+      listingForm.append("aptSuite", formLocation.aptSuite);
+      listingForm.append("city", formLocation.city);
+      listingForm.append("province", formLocation.province);
+      listingForm.append("country", formLocation.country);
+      listingForm.append("guestCount", guestCount);
+      listingForm.append("bedroomCount", bedroomCount);
+      listingForm.append("bedCount", bedCount);
+      listingForm.append("bathroomCount", bathroomCount);
+      listingForm.append("amenities", amenities);
+      listingForm.append("title", formDescription.title);
+      listingForm.append("description", formDescription.description);
+      listingForm.append("highlight", formDescription.highlight);
+      listingForm.append("highlightDesc", formDescription.highlightDesc);
+      listingForm.append("price", formDescription.price);
+  
+      photos.forEach((photo) => {
+        listingForm.append("listingPhotos", photo);
+      });
+  
+      const requiredFields = [
+        'category',
+        'type',
+        'streetAddress',
+        'city',
+        'province',
+        'country',
+        'guestCount',
+        'bedroomCount',
+        'bedCount',
+        'bathroomCount',
+        'title',
+        'description',
+        'highlight',
+        'highlightDesc',
+        'price',
+      ];
+  
+      const missingFields = requiredFields.filter(
+        (field) => !listingForm.get(field) || listingForm.get(field) === 'undefined'
+      );
+  
+      if (missingFields.length > 0) {
+        toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        return;
+      }
+  
+      const response = await axios.post('http://localhost:3001/properties/create', listingForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      console.log(response.data);
+  
+      if (response.status === 200) {
+        toast.success('Listing created successfully!');
+        Navigate('/');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('An error occurred. Please try again.');
     }
-
-    }catch(error){
-        console.log(error)
-    }
-}
+  };
+  
 
   return (
     <>
       <Navbar />
       <div className="max-w-6xl mx-auto">
+        <Toaster />
         <div className="flex mt-6 flex-col items-center">
           <p
             className="text-4xl font-bold"
