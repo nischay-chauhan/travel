@@ -1,11 +1,34 @@
 import Navbar from "../components/Navbar";
-import {DragDropContext , Draggable , Droppable} from "react-beautiful-dnd"
-import { categories , facilities , types} from "../data";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { categories, facilities, types } from "../data";
 import Place from "../components/CreateListing/Place";
 import GuestCounter from "../components/CreateListing/GuestCounter";
+import { useState } from "react";
+import { BiTrash, BiUpload } from "react-icons/bi";
 
 const CreateListing = () => {
-    
+  const [photos, setPhotos] = useState([]);
+
+  const handleUploadPhotos = (e) => {
+    const newPhotos = e.target.files;
+    setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+  };
+
+  const handleDragPhoto = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(photos);
+    const [recordedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, recordedItem);
+
+    setPhotos(items);
+  };
+
+  const handleRemovePhoto = (indexToRemove) => {
+    setPhotos((prevPhotos) =>
+      prevPhotos.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
   return (
     <>
       <Navbar />
@@ -97,20 +120,154 @@ const CreateListing = () => {
               ))}
             </div>
 
-                <div className="mt-6 mb-4">
-                    <h3 className=" text-2xl">Upload photos of Your Place</h3>
-                </div>
-                <div>
-                    <DragDropContext>
-                    <Droppable droappableId="photos" direction="horizontal">
-                        {(provided) => {
-                            <div className="flex" ref={provided.innerRef} {...provided.droppableProps}>
+            <div className="mt-6 mb-4">
+              <h3 className=" text-2xl">Upload photos of Your Place</h3>
+            </div>
+            <div>
+              <DragDropContext onDragEnd={handleDragPhoto}>
+                <Droppable droppableId="photos" direction="horizontal">
+                  {(provided) => (
+                    <div
+                      className="flex"
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {photos.length < 1 && (
+                        <>
+                          <input
+                            id="image"
+                            className="w-full text-black bg-white "
+                            type="file"
+                            accept="image/*"
+                            onChange={handleUploadPhotos}
+                            style={{ display: "none" }}
+                            multiple
+                          />
+                          <label htmlFor="image">
+                            <div className="flex flex-col justify-center p-4 items-center w-50 h-40 bg-gray-200 rounded-md">
+                              <BiUpload className="text-4xl" />
+                              <p className="text-md">Upload from your device</p>
                             </div>
-                        }}
-                    </Droppable>
-                    </DragDropContext>
+                          </label>
+                        </>
+                      )}
+                      {photos.length >= 1 && (
+                        <div className="flex flex-wrap gap-4">
+                          {photos.map((photo, index) => (
+                            <Draggable
+                              key={index}
+                              draggableId={index.toString()}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <div
+                                  className="flex flex-col items-center w-50 h-50 bg-gray-200 rounded-md shadow-md p-4"
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <img
+                                    src={URL.createObjectURL(photo)}
+                                    alt={`Place ${index + 1}`}
+                                    className="object-cover w-40 h-40 rounded-md mb-2"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemovePhoto(index)}
+                                    className="text-red-500 hover:text-red-700 transition"
+                                  >
+                                    <BiTrash />
+                                  </button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          <>
+                            <input
+                              id="image"
+                              className="w-full text-black bg-white"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleUploadPhotos}
+                              style={{ display: "none" }}
+                              multiple
+                            />
+                            <label htmlFor="image">
+                              <div className="flex flex-col justify-center items-center w-50 h-40 bg-gray-200 rounded-md p-4 hover:cursor-pointer">
+                                <BiUpload className="text-4xl" />
+                                <p className="text-md">
+                                  Upload from your device
+                                </p>
+                              </div>
+                            </label>
+                          </>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
+            <div className="mt-6 mb-4">
+              <h3 className="text-2xl">
+                What makes your place attractive and exciting?
+              </h3>
+              <div className="flex flex-col w-full p-4 bg-white rounded-md shadow-md">
+                <div className="mb-4">
+                  <p className="text-lg">Title</p>
+                  <input
+                    className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
+                    type="text"
+                    placeholder="Title..."
+                    name="title"
+                    required
+                  />
                 </div>
-
+                <div className="mb-4">
+                  <p className="text-lg">Description</p>
+                  <textarea
+                    className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
+                    type="text"
+                    placeholder="Description..."
+                    name="description"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <p className="text-lg">Highlight</p>
+                  <input
+                    className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
+                    type="text"
+                    placeholder="Highlight..."
+                    name="highlight"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <p className="text-lg">Highlight Details</p>
+                  <textarea
+                    className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
+                    type="text"
+                    placeholder="Highlight Details..."
+                    name="highlightDescription"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <p className="text-lg font-bold mb-2">Set Your Price</p>
+                  <div className="flex items-center">
+                    <span className="text-lg">$</span>
+                    <input
+                      className="ml-2 w-40 p-2 rounded-md border border-gray-300 focus:outline-none focus:border-primary"
+                      type="number"
+                      placeholder="20"
+                      name="price"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
