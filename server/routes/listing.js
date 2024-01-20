@@ -1,6 +1,6 @@
 import express from "express"
 import multer from "multer"
-import { createListing, getListingData } from "../controllers/Listing.js";
+import { createListing, getListingById, getListingData } from "../controllers/Listing.js";
 
 const router = express.Router();
 
@@ -35,5 +35,6 @@ const fileFilter = (req, file, cb) => {
 router.post('/create' , upload.array("listingPhotos") , createListing)
 
 router.get('/' , getListingData)
+router.get('/:listingId', getListingById)
 
 export default router

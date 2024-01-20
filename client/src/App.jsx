@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import {Toaster} from "react-hot-toast"
 import CreateListing from "./pages/CreateListing"
+import ListingDetails from "./pages/ListingDetails"
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path : "/create-listing",
     element : <CreateListing />
+  },
+  {
+    path : "/properties/:listingId",
+    element : <ListingDetails />
   }
 ])
 

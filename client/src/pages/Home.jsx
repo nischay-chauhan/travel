@@ -1,5 +1,6 @@
 import Carousal from "../components/Carousal"
 import Categories from "../components/Category"
+import Listings from "../components/Listings"
 import Navbar from "../components/Navbar"
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
         <Navbar />
         <Carousal />
         <Categories />
+        <Listings />
     </div>
   )
 }

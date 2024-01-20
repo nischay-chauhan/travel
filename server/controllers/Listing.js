@@ -103,3 +103,23 @@ export const getListingData = async(req , res) => {
         console.log(err);
       }
 };
+
+export const getListingById = async(req , res) => {
+    const { listingId } = req.params
+    try {
+        const listing = await Listing.findById(listingId).populate("creator")
+        res.status(200).json({
+            status: "success",
+            message: "Listing fetched successfully.",
+            listing,
+        });
+      
+      } catch (err) {
+        res.status(404).json({
+          status: "failure",
+          message: "Failed to fetch listing.",
+          error: err.message,
+        });
+        console.log(err);
+      }
+}
