@@ -8,6 +8,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "../styles/ListingDetails.css"; 
 import Loader from "../components/Loader";
+import Navbar from "../components/Navbar";
 
 const ListingDetails = () => {
   const [loading, setLoading] = useState(true);
@@ -56,7 +57,8 @@ const ListingDetails = () => {
     <Loader />
   ) : (
     <>
-      <div className="listing-details p-4 mx-auto max-w-3xl bg-white rounded-md shadow-md">
+    <Navbar />
+      <div className="listing-details mt-6 p-4 mx-auto max-w-3xl bg-white rounded-md shadow-md">
         <div className="title mb-4">
           <h1 className="text-2xl font-bold">{listing?.title}</h1>
         </div>
