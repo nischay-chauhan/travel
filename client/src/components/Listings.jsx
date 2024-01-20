@@ -72,7 +72,7 @@ const Listings = () => {
                 category,
                 type,
                 price,
-               
+                booking=false
               }) => (
                 <ListingCard
                   key={_id}
@@ -85,6 +85,7 @@ const Listings = () => {
                   category={category}
                   type={type}
                   price={price}
+                  booking={booking}
                   
                 />
               )

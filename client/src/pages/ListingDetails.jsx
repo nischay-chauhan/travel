@@ -1,6 +1,6 @@
 import  { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate } from "react-router-dom";
 import { facilities } from "../data";
 import axios from "axios";
 import { DateRange } from "react-date-range";
@@ -9,8 +9,10 @@ import "react-date-range/dist/theme/default.css";
 import "../styles/ListingDetails.css"; 
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
+import {useSelector} from "react-redux"
 
-const ListingDetails = () => {
+const ListingDetails = () => { 
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true);
   const { listingId } = useParams();
   const [listing, setListing] = useState({});
@@ -48,17 +50,49 @@ const ListingDetails = () => {
   const end = new Date(dateRange[0].endDate);
   const dayCount = Math.round((end - start) / (1000 * 60 * 60 * 24));
 
+  const customerId = useSelector((state) => state?.user?._id)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("WE'LL MAKE YOUR BOOKING SOON");
+
+
+    try {
+        if (dayCount <= 0) {
+            
+            toast.error("Please select valid dates for booking.");
+            return;
+          }
+      const bookingForm = {
+        customerId,
+        listingId,
+        hostId: listing.creator._id, 
+        startDate: dateRange[0].startDate,
+        endDate: dateRange[0].endDate,
+        totalPrice: dayCount * listing.price,
+      };
+
+      console.log("bookingForm", bookingForm);
+
+      const response = await axios.post("http://localhost:3001/bookings/create", bookingForm);
+    //   console.log(response);
+     if(response.ok){
+        toast.success("Booking successful!");
+     }
+     navigate(`/${customerId}/trips`)
+      
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while booking");
+    }
   };
+
 
   return loading ? (
     <Loader />
   ) : (
     <>
     <Navbar />
-      <div className="listing-details mt-6 p-4 mx-auto max-w-3xl bg-white rounded-md shadow-md">
+      <div className="listing-details mt-6 p-4 mx-auto max-w-5xl bg-white rounded-md shadow-md">
         <div className="title mb-4">
           <h1 className="text-2xl font-bold">{listing?.title}</h1>
         </div>

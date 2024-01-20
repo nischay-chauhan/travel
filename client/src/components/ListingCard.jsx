@@ -13,6 +13,10 @@ const ListingCard = ({
   category,
   type,
   price,
+  startDate,
+  endDate,
+  totalPrice,
+  booking
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
@@ -26,6 +30,12 @@ const ListingCard = ({
 
   const goToNextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % listingPhotoPaths.length);
+  };
+
+  // Function to format date without GMT
+  const formatDateWithoutGMT = (date) => {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(date).toLocaleDateString("en-US", options);
   };
 
   return (
@@ -73,25 +83,38 @@ const ListingCard = ({
         {city}, {province}, {country}
       </h3>
       <p className="text-lg">{category}</p>
-      <p className="text-lg">{type}</p>
-      <p>
-        <span>${price}</span> per night
-      </p>
+      {!booking ? (
+        <>
+          <p className="text-lg">{type}</p>
+          <p>
+            <span>${price}</span> per night
+          </p>
+        </>
+      ) : (
+        <>
+          <p className="text-lg">{formatDateWithoutGMT(startDate)} - {formatDateWithoutGMT(endDate)}</p>
+          <p className="text-lg">Total: ${totalPrice}</p> total
+        </>
+      )}
     </div>
   );
 };
 
 
 ListingCard.propTypes = {
-    listingId: PropTypes.string.isRequired,
-    creator: PropTypes.object.isRequired,
-    listingPhotoPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-    city: PropTypes.string.isRequired,
-    province: PropTypes.string.isRequired,
-    country: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-  };
+  listingId: PropTypes.string.isRequired,
+  creator: PropTypes.object.isRequired,
+  listingPhotoPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
+  city: PropTypes.string.isRequired,
+  province: PropTypes.string.isRequired,
+  country: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
+  startDate: PropTypes.instanceOf(Date).isRequired,
+  endDate: PropTypes.instanceOf(Date).isRequired,
+  totalPrice: PropTypes.number.isRequired,
+  booking: PropTypes.bool.isRequired,
+};
 
 export default ListingCard;
