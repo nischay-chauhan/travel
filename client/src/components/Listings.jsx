@@ -59,7 +59,13 @@ const Listings = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <>
+        <div className="flex justify-center mt-10 p-4">
+         <h1 className="text-3xl font-bold">Listings Presentend By Others</h1>
+         </div>
+        <div className="grid grid-cols-2 mb-10 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          
+         
           {Array.isArray(listings.listings) ? (
             listings.listings.map(
               ({
@@ -94,6 +100,7 @@ const Listings = () => {
             <p>Error: Invalid listings format</p>
           )}
         </div>
+        </>
       )}
     </>
   );

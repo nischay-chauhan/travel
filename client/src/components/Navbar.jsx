@@ -37,10 +37,10 @@ const Navbar = () => {
       </div>
 
       <div className="hidden lg:flex items-center space-x-4">
-        <div className="relative flex ">
+        <div className="relative flex items-center">
           <input
             type="text"
-            placeholder="Search ..."
+            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="py-1 px-2 rounded-l bg-gray-700 text-white focus:outline-none"
@@ -56,12 +56,15 @@ const Navbar = () => {
           </button>
         </div>
 
-        <Link to={user ? "" : "/login"} className="hover:text-gray-500">
+        <Link
+          to={user ? "/create-listing" : "/login"}
+          className="hover:text-gray-500"
+        >
           Become A Host
         </Link>
 
         <button
-          className="flex items-center space-x-2  cursor-pointer relative"
+          className="flex items-center space-x-2 cursor-pointer relative"
           onClick={() => setDropdownMenu(!dropdownMenu)}
         >
           {!user ? (
@@ -71,17 +74,20 @@ const Navbar = () => {
               className="w-16 h-16 object-cover rounded-full"
             />
           ) : (
-            <img
-              src={`http://localhost:3001/${user.profileImagePath.replace(
-                "public",
-                ""
-              )}`}
-              alt="profile photo"
-              className="w-8 h-8 object-cover rounded-full"
-            />
+            user && user.profileImagePath && (
+              <img
+                src={`http://localhost:3001/${user.profileImagePath.replace(
+                  "public",
+                  ""
+                )}`}
+                alt="profile photo"
+                className="w-8 h-8 object-cover rounded-full"
+              />
+            )
           )}
+
           {dropdownMenu && (
-            <div className="absolute top-14 z-10 w-max right-0 bg-gray-800  space-y-2 p-8 max-w-xl">
+            <div className="absolute top-14 right-0 bg-gray-800 space-y-2 p-8 max-w-xl">
               {!user ? (
                 <div className="flex flex-col ">
                   <Link
@@ -132,9 +138,9 @@ const Navbar = () => {
       </div>
 
       {isSidebarOpen && (
-        <div className="lg:hidden z-10 fixed top-0 left-0 h-full w-3/5 bg-gray-800">
+        <div className="lg:hidden z-10 fixed top-0 left-0 h-full w-4/5 bg-gray-800 transition-transform transform ease-in-out">
           <div className="p-8">
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="flex gap-2 items-center space-x-2 flex-col mb-4">
               <img
                 src={
                   user
@@ -145,7 +151,7 @@ const Navbar = () => {
                     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 }
                 alt="profile photo"
-                className="w-16 h-16 object-cover rounded-full"
+                className="w-32 h-32 object-cover rounded-full"
               />
               <h3 className="text-white text-lg">
                 {user ? user.username : "Guest"}
@@ -154,7 +160,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="px-2 py-1 border border-gray-500 rounded-md focus:outline-none"
+                className="px-2 w-2/3 py-1 border border-gray-500 rounded-md focus:outline-none"
               />
 
               <button className="text-xl text-white hover:text-gray-500">
@@ -165,7 +171,10 @@ const Navbar = () => {
             <div className="space-y-4">
               {user ? (
                 <div className="flex flex-col space-y-3">
-                  <Link to={`/create-listing`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/create-listing`}
+                    className="block text-xl hover:text-gray-500"
+                  >
                     Create Listing
                   </Link>
 

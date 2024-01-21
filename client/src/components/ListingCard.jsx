@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { BiArrowBack, BiArrowToRight } from "react-icons/bi";
+import { BiArrowBack, BiArrowToRight , BiHeart  } from "react-icons/bi";
+import { IoHeartOutline } from "react-icons/io5";
 import {useNavigate} from "react-router-dom"
 import "../styles/ListingCard.css";
 import PropTypes from "prop-types"
+import {useSelector , useDispatch} from "react-redux"
+import axios from "axios"
+import {toast} from "react-hot-toast"
+import { setWishList } from "../redux/state";
+
 const ListingCard = ({
   listingId,
   creator,
@@ -20,6 +26,22 @@ const ListingCard = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user);
+  const wishlist = useSelector((state) => state.user.wishList);
+  
+  const isLiked = wishlist.find((item) => item._id === listingId);
+
+  const patchWishList = async() => {
+    try{
+        const response = await axios.patch(`http://localhost:3001/users/${user._id}/${listingId}`)
+        console.log(response.data.wishList);
+        dispatch(setWishList(response.data.wishList))
+    }catch(error){
+        console.log(error)
+        toast.error("Error fetching liked listings")
+    }
+  }
 
   const goToPrevSlide = () => {
     setCurrentIndex(
@@ -40,7 +62,7 @@ const ListingCard = ({
 
   return (
     <div
-      className="listing-card"
+      className="listing-card  "
       onClick={() => {
         navigate(`/properties/${listingId}`);
       }}
@@ -55,6 +77,7 @@ const ListingCard = ({
               <img
                 src={`http://localhost:3001/${photo?.replace("public", "")}`}
                 alt={`photo ${index + 1}`}
+                className="w-full h-64 md:h-48 lg:h-40 object-cover rounded-md"
               />
               <div
                 className="prev-button"
@@ -96,6 +119,16 @@ const ListingCard = ({
           <p className="text-lg">Total: ${totalPrice}</p> total
         </>
       )}
+      <div className="favourite" onClick={(e) => {
+        e.stopPropagation();
+        patchWishList();
+      }}>
+        {isLiked ? (
+          <BiHeart style={{ fontSize: '20px', color: 'red' }} />
+        ) : (
+          <IoHeartOutline style={{ fontSize: '20px' }} />
+        )}
+      </div>
     </div>
   );
 };
