@@ -6,6 +6,8 @@ import {Toaster} from "react-hot-toast"
 import CreateListing from "./pages/CreateListing"
 import ListingDetails from "./pages/ListingDetails"
 import TripLists from "./pages/TripLists"
+import WishList from "./pages/WishList"
+import PropertyList from "./pages/PropertyList"
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
   {
     path : "/:userId/trips",
     element : <TripLists />
+  },
+  {
+    path : "/:userId/wishList",
+    element : <WishList />
+  },
+  {
+    path : "/:userId/properties",
+    element : <PropertyList />
   }
 ])
 

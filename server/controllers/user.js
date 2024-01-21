@@ -24,7 +24,7 @@ export const getLikedUserListing = async(req , res) => {
       if(!user){
           return res.status(404).json({message : "User not found! in likeduserListing controller"})
       }
-      const listing = await Listing.findById(listingId)
+      const listing = await Listing.findById(listingId).populate("creator")
       if(!listing){
           return res.status(404).json({message : "Listing not found! in likedUSerListing controller"})
       }
@@ -45,3 +45,19 @@ export const getLikedUserListing = async(req , res) => {
     res.status(400).json({message : "Failed to like user listing!"})
   }
 }
+
+export const getPropertyList = async(req , res) => {
+  try {
+    const { userId } = req.params;
+    const properties = await Listing.find({ creator: userId })
+      .populate("creator")
+      .exec();
+
+    res.status(200).json(properties);
+    // console.log(properties)
+  } catch (error) {
+    console.error("Error fetching user properties:", error);
+    res.status(500).json({ message: "Failed to get user properties", error: error.message });
+  }
+}
+

@@ -105,13 +105,13 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="flex flex-col space-y-3">
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/trips`} className="block text-xl hover:text-gray-500">
                     Trip List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/wishList`}  className="block text-xl hover:text-gray-500">
                     Wish List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
                     Property List
                   </Link>
                   <Link to={``} className="block text-xl hover:text-gray-500">
@@ -138,7 +138,7 @@ const Navbar = () => {
       </div>
 
       {isSidebarOpen && (
-        <div className="lg:hidden z-10 fixed top-0 left-0 h-full w-4/5 bg-gray-800 transition-transform transform ease-in-out">
+        <div className="lg:hidden z-20 fixed top-0 left-0 h-full w-4/5 bg-gray-800 transition-transform transform ease-in-out">
           <div className="p-8">
             <div className="flex gap-2 items-center space-x-2 flex-col mb-4">
               <img
@@ -178,13 +178,13 @@ const Navbar = () => {
                     Create Listing
                   </Link>
 
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/trips`} className="block text-xl hover:text-gray-500">
                     Trip List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/wishList`} className="block text-xl hover:text-gray-500">
                     Wish List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
                     Property List
                   </Link>
                   <Link to={``} className="block text-xl hover:text-gray-500">

@@ -28,14 +28,18 @@ const ListingCard = ({
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user);
-  const wishlist = useSelector((state) => state.user.wishList);
+  const wishlist = useSelector((state) => state.user?.wishList || []);
   
-  const isLiked = wishlist.find((item) => item._id === listingId);
+  const isLiked = wishlist?.find((item) => item?._id === listingId);
 
   const patchWishList = async() => {
     try{
-        const response = await axios.patch(`http://localhost:3001/users/${user._id}/${listingId}`)
-        console.log(response.data.wishList);
+      if (user?._id === creator._id) {
+        toast.error("Creators cannot like their own property");
+        return;
+      }
+        const response = await axios.patch(`http://localhost:3001/users/${user?._id}/${listingId}`)
+        // console.log(response.data.wishList);
         dispatch(setWishList(response.data.wishList))
     }catch(error){
         console.log(error)
@@ -119,16 +123,16 @@ const ListingCard = ({
           <p className="text-lg">Total: ${totalPrice}</p> total
         </>
       )}
-      <div className="favourite" onClick={(e) => {
+      <button disabled={!user} className={`favourite ${isLiked ? "bg-red-500 rounded-full fill" : ""}`} onClick={(e) => {
         e.stopPropagation();
         patchWishList();
       }}>
         {isLiked ? (
-          <BiHeart style={{ fontSize: '20px', color: 'red' }} />
+          <BiHeart style={{ fontSize: '20px', color: '' }} />
         ) : (
           <IoHeartOutline style={{ fontSize: '20px' }} />
         )}
-      </div>
+      </button>
     </div>
   );
 };

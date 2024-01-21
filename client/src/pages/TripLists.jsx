@@ -34,7 +34,7 @@ const TripLists = () => {
     <>
     <Navbar />
     <h1 className="title-list text-3xl font-bold">Your Trip Lists </h1>
-        <div className="list">
+        <div className="list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tripList?.map(({ listingId, hostId, startDate, endDate, totalPrice, booking=true }) => (
           <ListingCard
             key={listingId._id}
