@@ -81,13 +81,13 @@ span {
 
 .favourite {
   position: absolute;
-  right: 20px;
-  top: 20px;
+  top: 10px; 
+  right: 10px; 
   padding: 8px; 
   border-radius: 50%; 
   background-color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  z-index: 999;
+  z-index: 1; 
 }
 
 .favourite:hover {

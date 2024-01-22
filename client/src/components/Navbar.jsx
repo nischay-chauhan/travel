@@ -114,10 +114,10 @@ const Navbar = () => {
                   <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
                     Property List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/reservation`}className="block text-xl hover:text-gray-500">
                     Reservation List
                   </Link>
-                  <Link to="" className="block text-xl hover:text-gray-500">
+                  <Link to="/create-listing" className="block text-xl hover:text-gray-500">
                     Become A Host
                   </Link>
                   <Link
@@ -172,10 +172,10 @@ const Navbar = () => {
               {user ? (
                 <div className="flex flex-col space-y-3">
                   <Link
-                    to={`/create-listing`}
-                    className="block text-xl hover:text-gray-500"
+                    to={`/`}
+                    className="block text-2xl hover:text-gray-500"
                   >
-                    Create Listing
+                    Home
                   </Link>
 
                   <Link to={`/${user._id}/trips`} className="block text-xl hover:text-gray-500">
@@ -187,10 +187,10 @@ const Navbar = () => {
                   <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
                     Property List
                   </Link>
-                  <Link to={``} className="block text-xl hover:text-gray-500">
+                  <Link to={`/${user._id}/reservation`} className="block text-xl hover:text-gray-500">
                     Reservation List
                   </Link>
-                  <Link to="" className="block text-xl hover:text-gray-500">
+                  <Link to="/create-listing" className="block text-xl hover:text-gray-500">
                     Become A Host
                   </Link>
                   <Link

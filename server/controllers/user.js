@@ -61,3 +61,13 @@ export const getPropertyList = async(req , res) => {
   }
 }
 
+export const getUserReservation = async(req , res) => {
+  try{
+    const {userId} = req.params
+    const reservation = await Booking.find({hostId : userId})
+    res.status(200).json(reservation)
+  }catch(error){
+    console.log(error)
+    res.status(400).json({message : "Failed to fetch user reservation"})
+  }
+}
