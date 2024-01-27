@@ -36,7 +36,7 @@ const Navbar = () => {
         )}
       </div>
 
-      <div className="hidden lg:flex items-center space-x-4">
+      <div className="hidden  lg:flex items-center space-x-4">
         <div className="relative flex items-center">
           <input
             type="text"
@@ -64,7 +64,7 @@ const Navbar = () => {
         </Link>
 
         <button
-          className="flex items-center space-x-2 cursor-pointer relative"
+          className="flex  items-center space-x-2 cursor-pointer relative"
           onClick={() => setDropdownMenu(!dropdownMenu)}
         >
           {!user ? (
@@ -87,7 +87,7 @@ const Navbar = () => {
           )}
 
           {dropdownMenu && (
-            <div className="absolute top-14 right-0 bg-gray-800 space-y-2 p-8 max-w-xl">
+            <div className="absolute w-48 z-30 top-14 right-0 bg-gray-800 space-y-2 p-8 max-w-xl">
               {!user ? (
                 <div className="flex flex-col ">
                   <Link

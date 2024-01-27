@@ -54,7 +54,11 @@ const ListingDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if(!customerId){
+      toast.error("Please login to book a property");
+      return navigate('/login');
+      
+    }
 
     try {
         if (dayCount <= 0) {
