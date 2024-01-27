@@ -9,6 +9,7 @@ import TripLists from "./pages/TripLists"
 import WishList from "./pages/WishList"
 import PropertyList from "./pages/PropertyList"
 import ReservationList from "./pages/ReservationList"
+import CategoryPage from "./pages/CategoryPage"
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path : "/properties/:listingId",
     element : <ListingDetails />
+  },
+  {
+    path : "/properties/category/:category",
+    element : <CategoryPage />
   },
   {
     path : "/:userId/trips",

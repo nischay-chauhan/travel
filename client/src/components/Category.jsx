@@ -16,7 +16,7 @@ const Categories = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {categories?.slice(1, 7).map((category, index) => (
           <Link
-            to={``}
+            to={`/properties/category/${category.label}`}
             key={index}
             className="relative overflow-hidden rounded-md transition-transform duration-300 transform hover:scale-105 shadow-md"
             onMouseEnter={() => setHoveredIndex(index)}
