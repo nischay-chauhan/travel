@@ -17,40 +17,38 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-gray-800 p-6 flex justify-between items-center text-white">
-      <Link to="/">
-        <h1 className="text-3xl font-bold">TOURIST</h1>
+    <div className="bg-blue-900 p-4 flex justify-between items-center text-white">
+      <Link to="/" className="text-3xl font-bold tracking-wide">
+        TOURIST
       </Link>
 
       <div className="lg:hidden">
         {isSidebarOpen ? (
           <FaTimes
-            className="text-white text-2xl cursor-pointer"
+            className="text-2xl cursor-pointer"
             onClick={toggleSidebar}
           />
         ) : (
           <FaBars
-            className="text-white text-2xl cursor-pointer"
+            className="text-2xl cursor-pointer"
             onClick={toggleSidebar}
           />
         )}
       </div>
 
-      <div className="hidden  lg:flex items-center space-x-4">
+      <div className="hidden lg:flex items-center space-x-6">
         <div className="relative flex items-center">
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="py-1 px-2 rounded-l bg-gray-700 text-white focus:outline-none"
+            className="py-2 px-4 rounded-l bg-blue-800 text-white focus:outline-none"
           />
           <button
             disabled={search === ""}
-            onClick={() => {
-              navigate(``);
-            }}
-            className="py-1 px-4 bg-gray-600 rounded-r cursor-pointer"
+            onClick={() => navigate(``)}
+            className="py-2 px-4 bg-blue-700 rounded-r cursor-pointer"
           >
             <FaSearch className="text-white" />
           </button>
@@ -58,66 +56,77 @@ const Navbar = () => {
 
         <Link
           to={user ? "/create-listing" : "/login"}
-          className="hover:text-gray-500"
+          className="hover:text-blue-400 transition-colors duration-200"
         >
           Become A Host
         </Link>
 
-        <button
-          className="flex  items-center space-x-2 cursor-pointer relative"
-          onClick={() => setDropdownMenu(!dropdownMenu)}
-        >
-          {!user ? (
+        <div className="relative">
+          <button
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => setDropdownMenu(!dropdownMenu)}
+          >
             <img
-              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              alt="profile photo"
-              className="w-16 h-16 object-cover rounded-full"
+              src={
+                user && user.profileImagePath
+                  ? `http://localhost:3001/${user.profileImagePath.replace(
+                      "public",
+                      ""
+                    )}`
+                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+              alt="profile"
+              className="w-8 h-8 object-cover rounded-full"
             />
-          ) : (
-            user && user.profileImagePath && (
-              <img
-                src={`http://localhost:3001/${user.profileImagePath.replace(
-                  "public",
-                  ""
-                )}`}
-                alt="profile photo"
-                className="w-8 h-8 object-cover rounded-full"
-              />
-            )
-          )}
+          </button>
 
           {dropdownMenu && (
-            <div className="absolute w-48 z-30 top-14 right-0 bg-gray-800 space-y-2 p-8 max-w-xl">
+            <div className="absolute right-0 mt-2 w-48 bg-blue-800 rounded-lg shadow-lg py-2 z-20">
               {!user ? (
-                <div className="flex flex-col ">
+                <div className="flex flex-col items-start">
                   <Link
                     to="/login"
-                    className="block text-lg hover:text-gray-500"
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
                   >
                     Log In
                   </Link>
                   <Link
                     to="/register"
-                    className="block text-lg hover:text-gray-500"
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
                   >
                     Sign Up
                   </Link>
                 </div>
               ) : (
-                <div className="flex flex-col space-y-3">
-                  <Link to={`/${user._id}/trips`} className="block text-xl hover:text-gray-500">
+                <div className="flex flex-col items-start space-y-2">
+                  <Link
+                    to={`/${user._id}/trips`}
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
+                  >
                     Trip List
                   </Link>
-                  <Link to={`/${user._id}/wishList`}  className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/wishList`}
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
+                  >
                     Wish List
                   </Link>
-                  <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/properties`}
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
+                  >
                     Property List
                   </Link>
-                  <Link to={`/${user._id}/reservation`}className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/reservation`}
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
+                  >
                     Reservation List
                   </Link>
-                  <Link to="/create-listing" className="block text-xl hover:text-gray-500">
+                  <Link
+                    to="/create-listing"
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
+                  >
                     Become A Host
                   </Link>
                   <Link
@@ -126,7 +135,7 @@ const Navbar = () => {
                       dispatch(setLogout());
                       setDropdownMenu(false);
                     }}
-                    className="block text-xl hover:text-gray-500"
+                    className="block px-4 py-2 text-lg hover:text-blue-400 transition-colors duration-200"
                   >
                     Log Out
                   </Link>
@@ -134,13 +143,13 @@ const Navbar = () => {
               )}
             </div>
           )}
-        </button>
+        </div>
       </div>
 
       {isSidebarOpen && (
-        <div className="lg:hidden z-20 fixed top-0 left-0 h-full w-4/5 bg-gray-800 transition-transform transform ease-in-out">
+        <div className="lg:hidden fixed top-0 left-0 h-full w-4/5 bg-blue-900 z-20 transition-transform transform">
           <div className="p-8">
-            <div className="flex gap-2 items-center space-x-2 flex-col mb-4">
+            <div className="flex flex-col items-center mb-8">
               <img
                 src={
                   user
@@ -150,85 +159,108 @@ const Navbar = () => {
                       )}`
                     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 }
-                alt="profile photo"
-                className="w-32 h-32 object-cover rounded-full"
+                alt="profile"
+                className="w-24 h-24 object-cover rounded-full mb-4"
               />
-              <h3 className="text-white text-lg">
+              <h3 className="text-white text-lg mb-4">
                 {user ? user.username : "Guest"}
               </h3>
-
               <input
                 type="text"
                 placeholder="Search..."
-                className="px-2 w-2/3 py-1 border border-gray-500 rounded-md focus:outline-none"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="px-4 py-2 w-full bg-blue-800 text-white rounded-md focus:outline-none mb-4"
               />
-
-              <button className="text-xl text-white hover:text-gray-500">
+              <button
+                className="px-4 py-2 bg-blue-700 rounded-md text-white w-full"
+                onClick={() => navigate(``)}
+              >
                 Search
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="flex flex-col space-y-4">
               {user ? (
-                <div className="flex flex-col space-y-3">
+                <>
                   <Link
                     to={`/`}
-                    className="block text-2xl hover:text-gray-500"
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
                   >
                     Home
                   </Link>
-
-                  <Link to={`/${user._id}/trips`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/trips`}
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
+                  >
                     Trip List
                   </Link>
-                  <Link to={`/${user._id}/wishList`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/wishList`}
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
+                  >
                     Wish List
                   </Link>
-                  <Link to={`/${user._id}/properties`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/properties`}
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
+                  >
                     Property List
                   </Link>
-                  <Link to={`/${user._id}/reservation`} className="block text-xl hover:text-gray-500">
+                  <Link
+                    to={`/${user._id}/reservation`}
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
+                  >
                     Reservation List
                   </Link>
-                  <Link to="/create-listing" className="block text-xl hover:text-gray-500">
+                  <Link
+                    to="/create-listing"
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
+                  >
                     Become A Host
                   </Link>
                   <Link
                     to="/login"
                     onClick={() => {
                       dispatch(setLogout());
-                      setDropdownMenu(false);
+                      setSidebarOpen(false);
                     }}
-                    className="block text-xl hover:text-gray-500"
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
                   >
                     Log Out
                   </Link>
-                </div>
+                </>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    className="text-xl text-white hover:text-gray-500 block"
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
                   >
                     Log In
                   </Link>
                   <Link
                     to="/register"
-                    className="text-xl text-white hover:text-gray-500 block"
+                    className="block text-xl text-white hover:text-blue-400 transition-colors duration-200"
+                    onClick={toggleSidebar}
                   >
                     Sign Up
                   </Link>
                 </>
               )}
             </div>
-            <div className=" rounded-full">
-              <button
-                onClick={toggleSidebar}
-                className="text-xl text-red-500 rounded mt-3 "
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={toggleSidebar}
+              className="text-xl text-red-500 mt-8"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
