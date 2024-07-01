@@ -13,6 +13,12 @@ export const createBooking = async (req, res) => {
       totalPrice,
     });
     await newBooking.save();
+
+    req.io.to(hostId).emit("newBooking", {
+      message :  `You have a new booking from ${customerId} for listing ${listingId}`,
+      booking : newBooking
+    });
+
     res.status(200).json(newBooking);
   } catch (err) {
     console.log(err);

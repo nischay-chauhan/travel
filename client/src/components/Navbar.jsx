@@ -38,20 +38,8 @@ const Navbar = () => {
 
       <div className="hidden lg:flex items-center space-x-6">
         <div className="relative flex items-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="py-2 px-4 rounded-l bg-blue-800 text-white focus:outline-none"
-          />
-          <button
-            disabled={search === ""}
-            onClick={() => navigate(``)}
-            className="py-2 px-4 bg-blue-700 rounded-r cursor-pointer"
-          >
-            <FaSearch className="text-white" />
-          </button>
+          {/** Search bar */}
+          
         </div>
 
         <Link
