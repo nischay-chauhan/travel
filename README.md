@@ -7,12 +7,15 @@ Travel is a Place renting Website where users can both host their own place or b
 ## Features
 
 - User registration and login.
+- OTP verification on registeration of the User.
 - Booking or hosting a place.
 - Adding a place to the Wishlist.
 - Hosting a place and managing it in the Property List.
 - Viewing booked places in the Trips List.
 - Querying places based on different categories.
 - Implemented Redux-toolkit for global state management.
+- Added RazorPay payment method.
+  
 
 ## Environment Variables
 
@@ -21,6 +24,10 @@ To run this project, add the following environment variables to your .env file:
 - `PORT`: Port number for the server.
 - `MONGO_URI`: MongoDB connection URI.
 - `JWT_SECRET`: Secret key for JWT token.
+- `MAIL_USER` : your google gmail id,
+- `MAIL_PASS` : the pass generated on cratimng an app in google console
+- `RAZORPAY_API_KEY` : Your Razorpay api key
+- `RAZORPAY_API_SECRET` : Your Razorpay api secret 
 
 ## Documentation
 
@@ -32,8 +39,10 @@ To run this project, add the following environment variables to your .env file:
   - **Auth Controller (auth.js)**:
     - Register: Endpoint for user registration.
     - Login: Endpoint for user login.
+    - verifyOtp : Endpoint to verify the user OTP.
   - **Booking Controller (booking.js)**:
     - createBooking: Endpoint for creating a new booking.
+    - verifyPayment : To verify your Razor Pay payment.
   - **Listing Controller (listing.js)**:
     - createListing: Endpoint for creating a new property listing.
     - getListingData: Endpoint for fetching property listings.
@@ -50,10 +59,12 @@ To run this project, add the following environment variables to your .env file:
 
 - `/register`: POST endpoint for user registration.
 - `/login`: POST endpoint for user login.
+- `/verify-otp` : To verify the User otp upon signing up.
 
 #### Booking Routes (bookingRoutes.js)
 
 - `/create`: POST endpoint for creating a new booking.
+- `/verify-payment` : To verify the Payment made using the RazorPay
 
 #### Listing Routes (listingRoutes.js)
 
