@@ -2,7 +2,7 @@ import { createBrowserRouter , RouterProvider } from "react-router-dom"
 import Home from "./pages/Home"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
-import {Toaster} from "react-hot-toast"
+import toast, {Toaster} from "react-hot-toast"
 import CreateListing from "./pages/CreateListing"
 import ListingDetails from "./pages/ListingDetails"
 import TripLists from "./pages/TripLists"
@@ -11,7 +11,7 @@ import PropertyList from "./pages/PropertyList"
 import ReservationList from "./pages/ReservationList"
 import CategoryPage from "./pages/CategoryPage"
 import NotificationsPage from "./pages/NotificationsPage"
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from "react-redux"
 const router = createBrowserRouter([
@@ -72,7 +72,7 @@ const App = () => {
   
     socket.on('newBooking', (notification) => {
       if(notification.booking.hostId === user._id) {
-        console.log('Received new booking notification:', notification);
+        toast.success(`New booking from ${notification.booking.customerId.name}`);
       }
       
     });
