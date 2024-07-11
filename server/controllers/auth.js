@@ -95,6 +95,13 @@ export const login = async (req, res) => {
             })
         }
 
+        if (!user.isVerified) {
+            return res.status(400).json({
+                status: 'failure',
+                error: 'User is not verified'
+            });
+        }
+
         const isMatch = await bcrypt.compare(password , user.password)
 
         if(!isMatch){
