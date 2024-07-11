@@ -10,7 +10,10 @@ import WishList from "./pages/WishList"
 import PropertyList from "./pages/PropertyList"
 import ReservationList from "./pages/ReservationList"
 import CategoryPage from "./pages/CategoryPage"
-
+import NotificationsPage from "./pages/NotificationsPage"
+import React, { useEffect } from 'react';
+import io from 'socket.io-client';
+import { useSelector } from "react-redux"
 const router = createBrowserRouter([
   {
     path : "/",
@@ -51,10 +54,34 @@ const router = createBrowserRouter([
   {
     path : "/:userId/reservation",
     element : <ReservationList />
+  },
+  {
+    path : "/notifications",
+    element : <NotificationsPage />
   }
 ])
 
 const App = () => {
+  const user = useSelector((state) => state.user)
+  useEffect(() => {
+    const socket = io('http://localhost:3001');
+  
+    socket.on('connect', () => {
+      console.log('Connected to socket server');
+    });
+  
+    socket.on('newBooking', (notification) => {
+      if(notification.booking.hostId === user._id) {
+        console.log('Received new booking notification:', notification);
+      }
+      
+    });
+  
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
    <>
    <Toaster  />

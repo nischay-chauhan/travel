@@ -8,3 +8,18 @@
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
 }
+
+.notifications {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.notification {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
