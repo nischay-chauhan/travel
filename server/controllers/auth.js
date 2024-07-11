@@ -121,3 +121,40 @@ export const login = async (req, res) => {
     }
 }
 
+
+
+export const verifyOtp = async(req , res) => {
+    try{
+        const {userId , otp} = req.body
+        const user = await User.findById(userId)
+        if(!user){
+            return res.status(404).json({
+                status : 'failure',
+                error : 'User not found'
+            })
+        }
+
+        if(user.otp !== otp || Date.now() > user.otpExpiry){
+            return res.status(400).json({
+                status : 'failure',
+                error : 'Invalid OTP'
+            })
+        }
+
+        user.isVerified = true
+        user.otp = null
+        user.otpExpiry = null
+        await user.save()
+
+        res.status(200).json({
+            status : 'success',
+            message : 'User verified successfully'
+        })
+    }catch(error){
+        console.log(error)
+        res.status(500).json({
+            status : 'failure',
+            error : 'Internal server error while checking the OTP'
+        })
+    }
+}
