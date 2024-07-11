@@ -14,6 +14,7 @@ import NotificationsPage from "./pages/NotificationsPage"
 import  { useEffect } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from "react-redux"
+import OtpVerificationPage from "./components/OtpVerificationPage"
 const router = createBrowserRouter([
   {
     path : "/",
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
   {
     path : "/notifications",
     element : <NotificationsPage />
+  },
+  {
+    path : "/verify-otp",
+    element : <OtpVerificationPage />
   }
 ])
 

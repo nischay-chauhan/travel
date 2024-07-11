@@ -41,13 +41,13 @@ const handleSubmit = async (e) => {
         }
         const response = await axios.post("http://localhost:3001/api/register", formData);
         console.log(response.data);
-
+        
         if (response.status === 200) {
             toast.success("User registered successfully!", {
                 duration: 3000, 
                 position: "top-center",
             });
-            Navigate("/login");
+            Navigate("/verify-otp", { state: { userId: response.data.userId } });
         } else {
             toast.error("Registration failed. Please try again.", {
                 duration: 3000,
