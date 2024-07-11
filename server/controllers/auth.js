@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
-import crypto from "crypto"
+import crypto from "crypto";
 import nodemailer from "nodemailer"
+import dotenv from "dotenv"
+
+dotenv.config();
 export const register = async (req, res) => {
     try{
         const {firstName , lastName , email , password} = req.body
@@ -27,8 +30,9 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(password , salt)
 
-        const otp = crypto.randomBytes(3).toString("hex");
-        const otpExpiry = Date.now() + 10 * 60 * 1000;
+       
+        const otp = crypto.randomBytes(3).toString('hex');
+        const otpExpiry = Date.now() + 3600000; // 1 hour expiry
 
         const newUser = new User({
             firstName,
@@ -42,14 +46,13 @@ export const register = async (req, res) => {
         })
 
         await newUser.save()
-
         //now i have to send OTP to user mail
 
         const transporter = nodemailer.createTransport({
             service : 'gmail',
             auth : {
-                user : process.env.EMAIL_USER,
-                pass : process.env.EMAIL_PASSWORD
+                user : process.env.MAIL_USER,
+                pass : process.env.MAIL_PASS
             }
         })
 
@@ -59,10 +62,10 @@ export const register = async (req, res) => {
             subject : 'Verify your account',
             text : `Your OTP is ${otp}. It is a only valid for an Hour.`
         }
-
+        console
         await transporter.sendMail(mailOptions);
 
-
+    
 
         res.status(200).json({
             status : 'success',
