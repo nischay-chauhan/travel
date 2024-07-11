@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
-
+import crypto from "crypto"
+import nodemailer from "nodemailer"
 export const register = async (req, res) => {
     try{
         const {firstName , lastName , email , password} = req.body
@@ -42,10 +43,32 @@ export const register = async (req, res) => {
 
         await newUser.save()
 
+        //now i have to send OTP to user mail
+
+        const transporter = nodemailer.createTransport({
+            service : 'gmail',
+            auth : {
+                user : process.env.EMAIL_USER,
+                pass : process.env.EMAIL_PASSWORD
+            }
+        })
+
+        const mailOptions = {
+            from : process.env.MAIL_USER,
+            to : email,
+            subject : 'Verify your account',
+            text : `Your OTP is ${otp}. It is a only valid for an Hour.`
+        }
+
+        await transporter.sendMail(mailOptions);
+
+
+
         res.status(200).json({
             status : 'success',
-            message : 'User created successfully',
-            user:newUser
+            message : 'User created successfully , check your mail for your otp',
+            user:newUser,
+            userId : newUser._id
         })
 
     }catch(error){
