@@ -2,7 +2,7 @@ import Listing from "../models/Listing.js";
 import Booking from "../models/Booking.js";
 import Razorpay from "razorpay"
 import dotenv from "dotenv"
-
+import crypto from "crypto"
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -30,7 +30,7 @@ export const createBooking = async (req, res) => {
       startDate,
       endDate,
       totalPrice,
-      paymentStatus: "pending",
+      paymentStatus: "Pending",
       razorpayOrderId: order.id
     });
     await newBooking.save();
@@ -48,3 +48,28 @@ export const createBooking = async (req, res) => {
     res.status(400).json({ message: "Fail to create a new Booking!", error: err.message });
   }
 };
+
+
+export const verifyPayment = async(req , res) => {
+  const {order_id , payment_id , signature} = req.body
+  console.log({order_id , payment_id , signature})
+  const generatedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(order_id + "|" + payment_id)
+    .digest("hex");
+
+    if (generatedSignature === signature) {
+      const booking = await Booking.findOneAndUpdate(
+        { razorpayOrderId: order_id },
+        { paymentStatus: "Paid" },
+        { new: true }
+      );
+  
+      if (booking) {
+        res.status(200).json({ message: "Payment verified successfully", booking });
+      } else {
+        res.status(400).json({ message: "Booking not found" });
+      }
+    } else {
+      res.status(400).json({ message: "Invalid signature" });
+    }
+  };

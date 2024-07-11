@@ -1,6 +1,6 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useParams , useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { facilities } from "../data";
 import axios from "axios";
 import { DateRange } from "react-date-range";
@@ -9,31 +9,13 @@ import "react-date-range/dist/theme/default.css";
 import "../styles/ListingDetails.css"; 
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
-import {useSelector} from "react-redux"
+import { useSelector } from "react-redux";
 
 const ListingDetails = () => { 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const { listingId } = useParams();
   const [listing, setListing] = useState({});
-
-  const getListingDetails = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/properties/${listingId}`);
-    //   console.log(response);
-      setListing(response.data.listing);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      toast.error("Error while fetching listing details. Please try again later.");
-      console.error("Fetching the listing details failed:", error);
-    }
-  };
-
-  useEffect(() => {
-    getListingDetails();
-  }, []);
-
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -41,6 +23,23 @@ const ListingDetails = () => {
       key: "selection",
     },
   ]);
+
+  const customerId = useSelector((state) => state?.user?._id);
+
+  useEffect(() => {
+    const getListingDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/properties/${listingId}`);
+        setListing(response.data.listing);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        toast.error("Error while fetching listing details. Please try again later.");
+      }
+    };
+
+    getListingDetails();
+  }, [listingId]);
 
   const handleSelect = (ranges) => {
     setDateRange([ranges.selection]);
@@ -50,52 +49,90 @@ const ListingDetails = () => {
   const end = new Date(dateRange[0].endDate);
   const dayCount = Math.round((end - start) / (1000 * 60 * 60 * 24));
 
-  const customerId = useSelector((state) => state?.user?._id)
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!customerId){
+    if (!customerId) {
       toast.error("Please login to book a property");
       return navigate('/login');
-      
+    }
+
+    if (dayCount <= 0) {
+      toast.error("Please select valid dates for booking.");
+      return;
     }
 
     try {
-        if (dayCount <= 0) {
-            
-            toast.error("Please select valid dates for booking.");
-            return;
-          }
       const bookingForm = {
         customerId,
         listingId,
-        hostId: listing.creator._id, 
+        hostId: listing.creator._id,
         startDate: dateRange[0].startDate,
         endDate: dateRange[0].endDate,
         totalPrice: dayCount * listing.price,
       };
 
-      console.log("bookingForm", bookingForm);
-
       const response = await axios.post("http://localhost:3001/bookings/create", bookingForm);
-    //   console.log(response);
-     if(response.ok){
-        toast.success("Booking successful!");
-     }
-     navigate(`/${customerId}/trips`)
-      
+      console.log(response.status);
+      if (response.status == 200) {
+        console.log("this is getting hit")
+        
+        openRazorpayPaymentGateway(response.data);
+      }
     } catch (error) {
-      console.error(error);
       toast.error("Something went wrong while booking");
     }
   };
 
+  const openRazorpayPaymentGateway = (booking) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_API_KEY, 
+      amount: booking.totalPrice * 100,
+      currency: "INR",
+      name: "Booking Payment",
+      description: "Payment for booking",
+      order_id: booking.razorpayOrderId,
+      handler: async function (response) {
+        try {
+          console.log(response , "this is response from payment gateway");
+          const verificationResponse = await axios.post("http://localhost:3001/bookings/verify-payment", {
+            order_id: response.razorpay_order_id,
+            payment_id: response.razorpay_payment_id,
+            signature: response.razorpay_signature,
+          });
+
+          if (verificationResponse.status === 200) {
+            toast.success("Payment successful and booking confirmed!");
+            navigate(`/${customerId}/trips`);
+          } else {
+            toast.error("Payment verification failed. Please try again.");
+          }
+        } catch (error) {
+          toast.error("Payment verification failed. Please try again.");
+        }
+      },
+      prefill: {
+        name: "Your Name",
+        email: "your.email@example.com",
+        contact: "9999999999"
+      },
+      theme: {
+        color: "#3399cc"
+      }
+    };
+
+    if (window.Razorpay) {
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } else {
+      console.error("Razorpay SDK not loaded");
+    }
+  };
 
   return loading ? (
     <Loader />
   ) : (
     <>
-    <Navbar />
+      <Navbar />
       <div className="listing-details mt-6 p-4 mx-auto max-w-5xl bg-white rounded-md shadow-md">
         <div className="title mb-4">
           <h1 className="text-2xl font-bold">{listing?.title}</h1>
