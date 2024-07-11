@@ -26,12 +26,18 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(password , salt)
 
+        const otp = crypto.randomBytes(3).toString("hex");
+        const otpExpiry = Date.now() + 10 * 60 * 1000;
+
         const newUser = new User({
             firstName,
             lastName,
             email,
             password : hashedPassword,
             profileImagePath,
+            otp,
+            otpExpiry,
+            isVerified : false
         })
 
         await newUser.save()
