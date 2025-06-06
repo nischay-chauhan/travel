@@ -1,189 +1,208 @@
-import { Link } from "react-router-dom";
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { Link, useNavigate } from "react-router-dom";
+import { UploadCloud } from 'lucide-react'; // Replaced FaCloudUploadAlt
 import { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom"
-import { toast} from "react-hot-toast"
-import axios from "axios"
-
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // For image preview
 
 const RegisterPage = () => {
-    const Navigate = useNavigate();
-    const [formdata , setFormdata] = useState({
-        firstName : "",
-        lastName : "",
-        email : "",
-        password : "",
-        confirmPassword : "",
-        profileImage : null,
-    })
+  const navigate = useNavigate(); // Changed Navigate to navigate
+  const [formData, setFormData] = useState({ // Changed formdata to formData (convention)
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    profileImage: null,
+  });
+  const [previewImage, setPreviewImage] = useState(""); // For image preview URL
+  const [passwordMatch, setPasswordMatch] = useState(true);
 
-   const handleChange = (e) => {
-    const {name , value , files} = e.target;
-    setFormdata({
-        ...formdata,
-        [name] : value,
-        [name]: name === "profileImage" ? files[0] : value
-    })
-   }
-
-//    console.log(formdata)
-useEffect(() => {
-    setPasswordMatch(formdata.password === formdata.confirmPassword && formdata.password !== "" ? true : false);
-  }, [formdata.password, formdata.confirmPassword]);
-
-const [passwordMatch , setPasswordMatch] = useState(true)
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        const formData = new FormData();
-        for (const key in formdata) {
-            formData.append(key, formdata[key]);
-        }
-        const response = await axios.post("http://localhost:3001/api/register", formData);
-        console.log(response.data);
-        
-        if (response.status === 200) {
-            toast.success("User registered successfully!", {
-                duration: 3000, 
-                position: "top-center",
-            });
-            Navigate("/verify-otp", { state: { userId: response.data.userId } });
-        } else {
-            toast.error("Registration failed. Please try again.", {
-                duration: 3000,
-                position: "top-center",
-            });
-        }
-    } catch (err) {
-        console.error("Error registering", err);
-        if (err.response && err.response.status === 409) {
-            toast.error("User already exists. Please use a different email.", {
-                duration: 3000,
-                position: "top-center",
-            });
-        } else if (err.response && err.response.status === 400) {
-            toast.error("Profile image is required.", {
-                duration: 3000,
-                position: "top-center",
-            });
-        } else {
-            toast.error("Registration failed. Please try again.", {
-                duration: 3000,
-                position: "top-center",
-            });
-        }
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "profileImage") {
+      const file = files[0];
+      setFormData({
+        ...formData,
+        profileImage: file,
+      });
+      setPreviewImage(URL.createObjectURL(file)); // Create preview URL
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
-};
+  };
 
+  useEffect(() => {
+    setPasswordMatch(
+      formData.password === formData.confirmPassword || formData.confirmPassword === ""
+    );
+  }, [formData.password, formData.confirmPassword]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!passwordMatch) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+    if (!formData.profileImage) {
+        toast.error("Profile image is required.");
+        return;
+    }
+
+    const data = new FormData(); // Changed variable name from formData to data
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/register",
+        data
+      );
+      if (response.status === 200) {
+        toast.success("User registered successfully!");
+        navigate("/verify-otp", { state: { userId: response.data.userId } });
+      } else {
+        // This else block might not be reached if server throws error for non-200 status
+        toast.error(response.data.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error registering:", err);
+      toast.error(err.response?.data?.message || "Registration failed. Please try again.");
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center h-screen justify-center mt-4  bg-slate-100">
-      <div className="bg-white p-8 rounded-lg shadow-md md:w-[55%] w-full">
-        <h1 className="text-3xl font-bold mb-5">REGISTER PAGE</h1>
-      {formdata.profileImage && (
-                <img src={URL.createObjectURL(formdata.profileImage)}
-                alt="profileImage"
-                className="w-36 h-36 rounded-full mb-4"
-                 />
-            )}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              value={formdata.firstName}
-              onChange={handleChange}
-              className="w-full h-12  text-xl rounded p-4 focus:outline-none focus:border-blue-500 focus:border-brightness-110"
-              required
-              placeholder="First Name"
-            />
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-lg"> {/* Increased max-width for more fields */}
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold">CREATE AN ACCOUNT</CardTitle>
+          <CardDescription>
+            Join us by filling out the information below.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex justify-center mb-6">
+              <Label htmlFor="profileImage" className="cursor-pointer">
+                <Avatar className="w-32 h-32 border-2 border-dashed hover:border-primary">
+                  <AvatarImage src={previewImage} alt="Profile Preview" />
+                  <AvatarFallback className="bg-muted">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <UploadCloud className="w-12 h-12 mb-1" />
+                      <span>Upload Image</span>
+                    </div>
+                  </AvatarFallback>
+                </Avatar>
+              </Label>
+              <Input
+                type="file"
+                id="profileImage"
+                name="profileImage"
+                onChange={handleChange}
+                accept="image/*"
+                className="hidden" // Hidden, triggered by label
+              />
+            </div>
 
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="text"
-              id="lastName"
-              name = "lastName"
-              value={formdata.lastName}
-              onChange={handleChange}
-              className="w-full h-12 text-xl p-4 rounded focus:outline-none focus:border-blue-500 focus:border-brightness-110"
-              required
-              placeholder="Last Name"
-            />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  type="text"
+                  name="firstName"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  placeholder="John"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Doe"
+                />
+              </div>
+            </div>
 
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formdata.email}
-              onChange={handleChange}
-              className="w-full text-xl h-12 rounded p-4 focus:outline-none focus:border-blue-500 focus:border-brightness-110"
-              required
-              placeholder="Email"
-            />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="you@example.com"
+              />
+            </div>
 
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formdata.password}
-              onChange={handleChange}
-              className="w-full h-12 p-4 rounded focus:outline-none focus:border-blue-500 text-xl focus:border-brightness-110"
-              required
-              placeholder="Password"
-            />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                placeholder="••••••••"
+              />
+            </div>
 
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formdata.confirmPassword}
-              onChange={handleChange}
-              className="w-full h-12 p-4 rounded focus:outline-none focus:border-blue-500 text-xl focus:border-brightness-110"
-              required
-              placeholder="Confirm Password"
-            />
-          </div>
-
-          {!passwordMatch && (
-            <p className="text-red-500">Passwords do not match</p>
-          )}
-
-          <label htmlFor="image" className="text-gray-600 flex items-center">
-            <FaCloudUploadAlt className="mr-2" /> Upload Profile Picture
-          </label>
-          <div className="flex items-center border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="file"
-              id="image"
-              name="profileImage"
-              onChange={handleChange}
-              className="w-full text-xl h-12 rounded focus:outline-none focus:border-blue-500 focus:border-brightness-110"
-              accept="image/*"
-              style={{ display: "none" }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="bg-blue-500 text-white rounded-full py-3 px-6 hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-            disabled={!passwordMatch}
-          >
-            Register
-          </button>
-        </form>
-
-        <div className="mt-4">
-          Already Registered? <Link to="/login" className="text-blue-500">Go to Login</Link>
-        </div>
-      </div>
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                placeholder="••••••••"
+              />
+              {!passwordMatch && formData.confirmPassword !== "" && (
+                <p className="text-sm text-destructive pt-1">
+                  Passwords do not match.
+                </p>
+              )}
+            </div>
+            <Button type="submit" className="w-full" disabled={!passwordMatch && formData.confirmPassword !== ""}>
+              Register
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="text-center block">
+          <p className="text-sm">
+            Already Registered?{" "}
+            <Button variant="link" asChild className="p-0 h-auto">
+              <Link to="/login">Go to Login</Link>
+            </Button>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 };

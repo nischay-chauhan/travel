@@ -1,13 +1,22 @@
-import { useState } from "react";
-import { BiArrowBack, BiArrowToRight , BiHeart  } from "react-icons/bi";
-import { IoHeartOutline } from "react-icons/io5";
-import {useNavigate} from "react-router-dom"
-import "../styles/ListingCard.css";
-import PropTypes from "prop-types"
-import {useSelector , useDispatch} from "react-redux"
-import axios from "axios"
-import {toast} from "react-hot-toast"
+import { useState, useEffect } from "react"; // Added useEffect for potential client-side checks
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react"; // Replaced react-icons
+import { useNavigate } from "react-router-dom";
+// import "../styles/ListingCard.css"; // To be removed
+import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import { setWishList } from "../redux/state";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+
 
 const ListingCard = ({
   listingId,
@@ -22,120 +31,129 @@ const ListingCard = ({
   startDate,
   endDate,
   totalPrice,
-  booking
+  booking,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0); // Carousel handles this
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const wishlist = useSelector((state) => state.user?.wishList || []);
-  
-  const isLiked = wishlist?.find((item) => item?._id === listingId);
 
-  const patchWishList = async() => {
-    try{
+  // Ensure component updates if wishlist changes externally or user logs in/out
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(wishlist?.some((item) => item?._id === listingId));
+  }, [wishlist, listingId]);
+
+
+  const patchWishList = async () => {
+    if (!user) {
+      toast.error("You must be logged in to add to wishlist.");
+      navigate("/login");
+      return;
+    }
+    try {
       if (user?._id === creator._id) {
-        toast.error("Creators cannot like their own property");
+        toast.error("You cannot add your own property to your wishlist.");
         return;
       }
-        const response = await axios.patch(`http://localhost:3001/users/${user?._id}/${listingId}`)
-        // console.log(response.data.wishList);
-        dispatch(setWishList(response.data.wishList))
-    }catch(error){
-        console.log(error)
-        toast.error("Error fetching liked listings")
+      const response = await axios.patch(
+        `http://localhost:3001/users/${user?._id}/${listingId}`
+      );
+      dispatch(setWishList(response.data.wishList));
+      toast.success(isLiked ? "Removed from wishlist" : "Added to wishlist");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update wishlist. Please try again.");
     }
-  }
-
-  const goToPrevSlide = () => {
-    setCurrentIndex(
-      (prevIndex) =>
-        (prevIndex - 1 + listingPhotoPaths.length) % listingPhotoPaths.length
-    );
   };
 
-  const goToNextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % listingPhotoPaths.length);
-  };
-
-  // Function to format date without GMT
-  const formatDateWithoutGMT = (date) => {
-    const options = { year: "numeric", month: "short", day: "numeric" };
-    return new Date(date).toLocaleDateString("en-US", options);
+  const formatDateWithoutGMT = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
-    <div
-      className="listing-card  "
-      onClick={() => {
-        navigate(`/properties/${listingId}`);
-      }}
-    >
-      <div className="slider-container">
-        <div
-          className="slider"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+    <Card className="w-full overflow-hidden cursor-pointer group" onClick={() => navigate(`/properties/${listingId}`)}>
+      <div className="relative">
+        <Carousel className="w-full">
+          <CarouselContent>
+            {listingPhotoPaths?.map((photo, index) => (
+              <CarouselItem key={index}>
+                <div className="aspect-square w-full relative">
+                  <img
+                    src={`http://localhost:3001/${photo?.replace("public", "")}`}
+                    alt={`photo ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+            {(listingPhotoPaths?.length || 0) === 0 && (
+                 <CarouselItem>
+                    <div className="aspect-square w-full relative bg-muted flex items-center justify-center">
+                        <p className="text-muted-foreground">No Image</p>
+                    </div>
+                 </CarouselItem>
+            )}
+          </CarouselContent>
+          {listingPhotoPaths && listingPhotoPaths.length > 1 && (
+            <>
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/75 text-white border-none" onClick={(e) => e.stopPropagation()} />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/75 text-white border-none" onClick={(e) => e.stopPropagation()} />
+            </>
+          )}
+        </Carousel>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`absolute top-2 right-2 z-10 rounded-full bg-black/30 hover:bg-black/50 text-white hover:text-white ${isLiked ? "text-red-500 hover:text-red-600 bg-red-500/30 hover:bg-red-500/50" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            patchWishList();
+          }}
+          disabled={!user}
         >
-          {listingPhotoPaths?.map((photo, index) => (
-            <div key={index} className="slide">
-              <img
-                src={`http://localhost:3001/${photo?.replace("public", "")}`}
-                alt={`photo ${index + 1}`}
-                className="w-full h-64 md:h-48 lg:h-40 object-cover rounded-md"
-              />
-              <div
-                className="prev-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrevSlide(e);
-                }}
-              >
-                <BiArrowBack style={{ fontSize: "15px" }} />
-              </div>
-              <div
-                className="next-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNextSlide(e);
-                }}
-              >
-                <BiArrowToRight style={{ fontSize: "15px" }} />
-              </div>
-            </div>
-          ))}
-        </div>
+          <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500" : "fill-transparent stroke-white"}`} />
+          <span className="sr-only">Add to wishlist</span>
+        </Button>
       </div>
 
-      <h3 className="text-2xl">
-        {city}, {province}, {country}
-      </h3>
-      <p className="text-lg">{category}</p>
-      {!booking ? (
-        <>
-          <p className="text-lg">{type}</p>
-          <p>
-            <span>${price}</span> per night
-          </p>
-        </>
-      ) : (
-        <>
-          <p className="text-lg">{formatDateWithoutGMT(startDate)} - {formatDateWithoutGMT(endDate)}</p>
-          <p className="text-lg">Total: ${totalPrice}</p> total
-        </>
-      )}
-      <button disabled={!user} className={`favourite ${isLiked ? "bg-red-500 rounded-full fill" : ""}`} onClick={(e) => {
-        e.stopPropagation();
-        patchWishList();
-      }}>
-        {isLiked ? (
-          <BiHeart style={{ fontSize: '20px', color: '' }} />
+      <CardContent className="p-4 space-y-1.5">
+        <h3 className="font-semibold text-lg truncate">
+          {city}, {province}, {country}
+        </h3>
+        <p className="text-sm text-muted-foreground truncate">{category}</p>
+        {!booking ? (
+          <>
+            <p className="text-sm text-muted-foreground truncate">{type}</p>
+            <p className="font-semibold">
+              <span className="text-lg">${price}</span>{" "}
+              <span className="text-sm text-muted-foreground">per night</span>
+            </p>
+          </>
         ) : (
-          <IoHeartOutline style={{ fontSize: '20px' }} />
+          <>
+            <p className="text-sm">
+              {formatDateWithoutGMT(startDate)} - {formatDateWithoutGMT(endDate)}
+            </p>
+            <p className="font-semibold">
+              <span className="text-lg">${totalPrice}</span>{" "}
+              <span className="text-sm text-muted-foreground">total</span>
+            </p>
+          </>
         )}
-      </button>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
+
 
 
 ListingCard.propTypes = {
@@ -148,10 +166,17 @@ ListingCard.propTypes = {
   category: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  startDate: PropTypes.instanceOf(Date).isRequired,
-  endDate: PropTypes.instanceOf(Date).isRequired,
-  totalPrice: PropTypes.number.isRequired,
-  booking: PropTypes.bool.isRequired,
+  startDate: PropTypes.string, // Changed from Date to string, as it comes from API
+  endDate: PropTypes.string,   // Changed from Date to string
+  totalPrice: PropTypes.number,
+  booking: PropTypes.bool,
+};
+
+ListingCard.defaultProps = {
+  startDate: null,
+  endDate: null,
+  totalPrice: null,
+  booking: false,
 };
 
 export default ListingCard;

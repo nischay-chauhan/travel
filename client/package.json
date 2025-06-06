@@ -12,8 +12,11 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "heroicons": "^2.1.1",
+    "lucide-react": "^0.513.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-date-range": "^2.0.0-alpha.4",
@@ -24,7 +27,10 @@
     "react-router-dom": "^6.21.2",
     "react-toastify": "^10.0.5",
     "redux-persist": "^6.0.0",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "sonner": "^2.0.5",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
