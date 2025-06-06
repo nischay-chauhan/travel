@@ -1,4 +1,5 @@
 import { createBrowserRouter , RouterProvider } from "react-router-dom"
+import RootLayout from "./layouts/RootLayout"; // Import RootLayout
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -16,54 +17,25 @@ import { useEffect } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from "react-redux";
 import OtpVerificationPage from "./components/OtpVerificationPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />
-  },
-  {
-    path: "/login",
-    element: <LoginPage />
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />
-  },
-  {
-    path: "/create-listing",
-    element: <CreateListing />
-  },
-  {
-    path: "/properties/:listingId",
-    element: <ListingDetails />
-  },
-  {
-    path: "/properties/category/:category",
-    element: <CategoryPage />
-  },
-  {
-    path: "/:userId/trips",
-    element: <TripLists />
-  },
-  {
-    path: "/:userId/wishList",
-    element: <WishList />
-  },
-  {
-    path: "/:userId/properties",
-    element: <PropertyList />
-  },
-  {
-    path: "/:userId/reservation",
-    element: <ReservationList />
-  },
-  {
-    path: "/notifications",
-    element: <NotificationsPage /> // This page will be simplified
-  },
-  {
-    path: "/verify-otp",
-    element: <OtpVerificationPage />
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
+      { path: "create-listing", element: <CreateListing /> },
+      { path: "properties/:listingId", element: <ListingDetails /> },
+      { path: "properties/category/:category", element: <CategoryPage /> },
+      { path: ":userId/trips", element: <TripLists /> },
+      { path: ":userId/wishList", element: <WishList /> },
+      { path: ":userId/properties", element: <PropertyList /> },
+      { path: ":userId/reservation", element: <ReservationList /> },
+      { path: "notifications", element: <NotificationsPage /> },
+      { path: "verify-otp", element: <OtpVerificationPage /> },
+    ]
   }
 ]);
 

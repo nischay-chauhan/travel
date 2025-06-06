@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { UploadCloud } from 'lucide-react'; // Replaced FaCloudUploadAlt
+import { UploadCloud, Loader2 } from 'lucide-react'; // Replaced FaCloudUploadAlt, Added Loader2
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion"; // Import motion
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,11 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // For image preview
 
+const cardVariants = { // Define cardVariants
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
 const RegisterPage = () => {
   const navigate = useNavigate(); // Changed Navigate to navigate
   const [formData, setFormData] = useState({ // Changed formdata to formData (convention)
@@ -28,6 +34,7 @@ const RegisterPage = () => {
   });
   const [previewImage, setPreviewImage] = useState(""); // For image preview URL
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -54,12 +61,16 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true
+
     if (!passwordMatch) {
       toast.error("Passwords do not match!");
+      setIsLoading(false); // Reset loading state
       return;
     }
     if (!formData.profileImage) {
         toast.error("Profile image is required.");
+        setIsLoading(false); // Reset loading state
         return;
     }
 
@@ -76,21 +87,26 @@ const RegisterPage = () => {
       if (response.status === 200) {
         toast.success("User registered successfully!");
         navigate("/verify-otp", { state: { userId: response.data.userId } });
-      } else {
-        // This else block might not be reached if server throws error for non-200 status
-        toast.error(response.data.message || "Registration failed. Please try again.");
       }
+      // No need for else block here, as axios throws an error for non-2xx responses, which is caught below.
     } catch (err) {
-      console.error("Error registering:", err);
-      toast.error(err.response?.data?.message || "Registration failed. Please try again.");
+      console.error("Error registering:", err.response || err.message);
+      toast.error(
+        err.response?.data?.message ||
+        err.response?.data?.error || // Check for error.response.data.error
+        "Registration failed. Please try again."
+      );
+    } finally {
+      setIsLoading(false); // Set loading to false
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-lg"> {/* Increased max-width for more fields */}
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">CREATE AN ACCOUNT</CardTitle>
+      <motion.div initial="hidden" animate="visible" variants={cardVariants} className="w-full max-w-lg">
+        <Card> {/* Removed className from Card as it's on motion.div now */}
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold">CREATE AN ACCOUNT</CardTitle>
           <CardDescription>
             Join us by filling out the information below.
           </CardDescription>
@@ -189,8 +205,19 @@ const RegisterPage = () => {
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={!passwordMatch && formData.confirmPassword !== ""}>
-              Register
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading || (!passwordMatch && formData.confirmPassword !== "")}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Register"
+              )}
             </Button>
           </form>
         </CardContent>
@@ -202,7 +229,8 @@ const RegisterPage = () => {
             </Button>
           </p>
         </CardFooter>
-      </Card>
+        </Card>
+      </motion.div>
     </div>
   );
 };

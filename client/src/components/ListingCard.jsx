@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"; // Added useEffect for potential client-side checks
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react"; // Replaced react-icons
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Import motion
 // import "../styles/ListingCard.css"; // To be removed
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,6 +18,10 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 
+const itemVariants = { // Define itemVariants
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+};
 
 const ListingCard = ({
   listingId,
@@ -80,9 +85,10 @@ const ListingCard = ({
   };
 
   return (
-    <Card className="w-full overflow-hidden cursor-pointer group" onClick={() => navigate(`/properties/${listingId}`)}>
-      <div className="relative">
-        <Carousel className="w-full">
+    <motion.div variants={itemVariants} className="w-full"> {/* Apply variants and ensure width if needed */}
+      <Card className="w-full overflow-hidden cursor-pointer group" onClick={() => navigate(`/properties/${listingId}`)}>
+        <div className="relative">
+          <Carousel className="w-full">
           <CarouselContent>
             {listingPhotoPaths?.map((photo, index) => (
               <CarouselItem key={index}>
@@ -150,7 +156,8 @@ const ListingCard = ({
           </>
         )}
       </CardContent>
-    </Card>
+      </Card>
+    </motion.div>
   );
 };
 

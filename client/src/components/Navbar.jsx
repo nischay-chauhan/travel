@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, X, Search as SearchIcon, LogOut, UserCircle, Home, List, Heart, Building, CalendarCheck, PlusCircle } from "lucide-react"; // Renamed Search to SearchIcon
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose, SheetFooter } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input"; // Added Input for search
+import ThemeToggle from "./ThemeToggle"; // Import ThemeToggle
 
 const Navbar = () => {
   // const [dropdownMenu, setDropdownMenu] = useState(false); // Will be controlled by DropdownMenu
@@ -56,6 +57,8 @@ const Navbar = () => {
         <Button variant="link" asChild className="text-primary-foreground hover:text-secondary-foreground transition-colors duration-200">
           <Link to={user ? "/create-listing" : "/login"}>Become A Host</Link>
         </Button>
+
+        <ThemeToggle /> {/* Add ThemeToggle to desktop nav */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -220,11 +223,16 @@ const Navbar = () => {
               )}
             </nav>
 
-            <SheetFooter className="mt-auto pt-6">
-              <SheetClose asChild>
-                <Button variant="outline" className="w-full">Close</Button>
-              </SheetClose>
-            </SheetFooter>
+            <div className="mt-auto pt-6"> {/* Wrapper for ThemeToggle and Close button */}
+              <div className="flex justify-center mb-4">  {/* Centering ThemeToggle */}
+                <ThemeToggle />
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button variant="outline" className="w-full">Close</Button>
+                </SheetClose>
+              </SheetFooter>
+            </div>
           </SheetContent>
         </Sheet>
       </div>

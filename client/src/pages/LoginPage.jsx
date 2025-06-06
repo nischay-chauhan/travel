@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion"; // Import motion
+import { Loader2 } from "lucide-react"; // Import Loader2
 import toast from "react-hot-toast";
 import { setLogin } from "../redux/state";
 import { useDispatch } from "react-redux";
@@ -16,11 +18,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const cardVariants = { // Define cardVariants
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Changed Navigate to navigate (convention)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
   // Simplified handleChange
   const handleChange = (e) => {
@@ -31,6 +39,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true
     try {
       const response = await axios.post("http://localhost:3001/api/login", {
         email,
@@ -43,16 +52,23 @@ const LoginPage = () => {
         navigate("/"); // Changed Navigate to navigate
       }
     } catch (error) {
-      console.error("Login failed:", error); // Added more specific console error
-      toast.error(error.response?.data?.message || "Invalid credentials. Login failed.");
+      console.error("Login failed:", error.response || error.message);
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data?.error || // Check for error.response.data.error
+        "Invalid credentials. Login failed."
+      );
+    } finally {
+      setIsLoading(false); // Set loading to false
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">LOGIN HERE</CardTitle>
+      <motion.div initial="hidden" animate="visible" variants={cardVariants} className="w-full max-w-md">
+        <Card> {/* Removed className from Card as it's on motion.div now */}
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold">LOGIN HERE</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -81,8 +97,15 @@ const LoginPage = () => {
                 placeholder="••••••••"
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Login"
+              )}
             </Button>
           </form>
         </CardContent>
@@ -94,7 +117,8 @@ const LoginPage = () => {
             </Button>
           </p>
         </CardFooter>
-      </Card>
+        </Card>
+      </motion.div>
     </div>
   );
 };
