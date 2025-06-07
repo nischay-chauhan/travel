@@ -47,7 +47,7 @@ const Navbar = () => {
 
   return (
     <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center sticky top-0 z-50">
-      <Link to="/" className="text-3xl font-bold tracking-wide">
+      <Link to="/" className="text-3xl font-bold tracking-wide hover:opacity-80 transition-opacity duration-200">
         TOURIST
       </Link>
 
@@ -132,7 +132,7 @@ const Navbar = () => {
           <SheetContent side="left" className="bg-primary text-primary-foreground w-4/5 sm:w-1/2 md:w-1/3 p-6 flex flex-col">
             <SheetHeader className="mb-6">
               <SheetTitle asChild>
-                <Link to="/" className="text-2xl font-bold tracking-wide text-primary-foreground hover:text-secondary-foreground">
+                <Link to="/" className="text-2xl font-bold tracking-wide text-primary-foreground hover:opacity-80 transition-opacity duration-200">
                   TOURIST
                 </Link>
               </SheetTitle>

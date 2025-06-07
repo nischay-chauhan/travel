@@ -55,14 +55,14 @@ const Listings = () => {
           <div
             key={index}
             onClick={() => setSelectedCategory(category.label)}
-            className={`flex hover:cursor-pointer items-center justify-center h-32 w-32 p-4 bg-gray-200 rounded-md hover:scale-105 transition-transform duration-300 ${
-              category.label === selectedCategory ? "bg-blue-300" : ""
+            className={`flex flex-col text-center hover:cursor-pointer items-center justify-center h-32 w-32 p-4 rounded-md hover:scale-105 transition-all duration-300 ${
+              category.label === selectedCategory ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
             }`}
           >
-            <div className="flex items-center justify-center text-3xl">
+            <div className="text-3xl"> {/* Icon inherits color */}
               {category.icon}
             </div>
-            <p className="text-base mt-2">{category.label}</p>
+            <p className="text-sm mt-2 font-medium">{category.label}</p> {/* Label inherits color, adjusted size */}
           </div>
         ))}
       </div>
@@ -72,7 +72,7 @@ const Listings = () => {
       ) : (
         <>
         <div className="flex justify-center mt-10 p-4">
-         <h1 className="text-3xl font-bold">Listings Presentend By Others</h1>
+         <h1 className="text-3xl font-bold text-foreground">Listings Presented By Others</h1>
          </div>
         <motion.div
           className="grid grid-cols-2 mb-10 md:grid-cols-3 lg:grid-cols-4 gap-4"
