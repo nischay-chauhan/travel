@@ -1,87 +1,124 @@
-import { Link , useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios"
+import axios from "axios";
+import { motion } from "framer-motion"; // Import motion
+import { Loader2 } from "lucide-react"; // Import Loader2
 import toast from "react-hot-toast";
 import { setLogin } from "../redux/state";
-import {useDispatch} from "react-redux"
+import { useDispatch } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const cardVariants = { // Define cardVariants
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 const LoginPage = () => {
-  const dispatch = useDispatch()
-  const Navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Changed Navigate to navigate (convention)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
+  // Simplified handleChange
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
+    if (name === "email") setEmail(value);
+    else if (name === "password") setPassword(value);
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-        const response = await axios.post("http://localhost:3001/api/login", {email , password})
-        const {user , token } = response.data;
-        console.log("USER " , user)
-        console.log("Token" , token)
-        if (response.status === 200) {
-            dispatch(setLogin({ user, token }));
-            toast.success("Login successful");
-            Navigate('/')
-          }
-
-    }catch(error){
-        console.log(error)
-        toast.error("Invalid credentials Login failed")
+    setIsLoading(true); // Set loading to true
+    try {
+      const response = await axios.post("http://localhost:3001/api/login", {
+        email,
+        password,
+      });
+      const { user, token } = response.data;
+      if (response.status === 200) {
+        dispatch(setLogin({ user, token }));
+        toast.success("Login successful");
+        navigate("/"); // Changed Navigate to navigate
+      }
+    } catch (error) {
+      console.error("Login failed:", error.response || error.message);
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data?.error || // Check for error.response.data.error
+        "Invalid credentials. Login failed."
+      );
+    } finally {
+      setIsLoading(false); // Set loading to false
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="bg-white p-8  rounded-lg flex flex-col justify-center items-center shadow-md md:w-[55%]  ">
-        <h1 className="text-3xl font-bold mb-6">LOGIN HERE </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={handleChange}
-              className="w-full text-xl h-12 rounded p-4 focus:outline-none focus:border-blue-500 focus:border-brightness-110"
-              required
-              placeholder="Email"
-            />
-          </div>
-
-          <div className="border-b-2 border-gradient pb-2 mb-4">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={handleChange}
-              className="w-full h-12 p-4 rounded focus:outline-none focus:border-blue-500 text-xl focus:border-brightness-110"
-              required
-              placeholder="Password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="bg-blue-500 text-white rounded-full py-3 px-6 hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-          >
-            Login
-          </button>
-        </form>
-
-        <div className="mt-4">
-          New User? <Link to="/register" className="text-blue-500">Register here</Link>
-        </div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <motion.div initial="hidden" animate="visible" variants={cardVariants} className="w-full max-w-md">
+        <Card> {/* Removed className from Card as it's on motion.div now */}
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold">LOGIN HERE</CardTitle>
+          <CardDescription>Enter your credentials to access your account.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Login"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="text-center block">
+          <p className="text-sm">
+            New User?{" "}
+            <Button variant="link" asChild className="p-0 h-auto">
+              <Link to="/register">Register here</Link>
+            </Button>
+          </p>
+        </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 };

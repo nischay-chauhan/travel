@@ -34,18 +34,32 @@ export const createBooking = async (req, res) => {
       razorpayOrderId: order.id
     });
     await newBooking.save();
-    console.log(hostId)
 
-    req.io.emit("newBooking", {
-      message: `You have a new booking from ${customerId} for listing ${listingId}`,
-      booking: newBooking
-    });
+    // Populate related fields to include in the notification and response
+    await newBooking.populate([
+      { path: "customerId", select: "username profileImagePath" },
+      { path: "listingId", select: "title listingPhotoPaths city country type price" },
+      { path: "hostId", select: "username" } // Ensure hostId itself is populated if needed, though we have hostId string
+    ]);
+
+    const hostIdString = newBooking.hostId._id.toString(); // hostId is populated, get its _id
+    const userSockets = req.userSockets;
+
+    if (userSockets && hostIdString && userSockets[hostIdString]) {
+      const hostSocketId = userSockets[hostIdString];
+      req.io.to(hostSocketId).emit("newBooking", {
+        message: `You have a new booking for your property: ${newBooking.listingId.title || 'N/A'} by ${newBooking.customerId.username || 'a customer'}.`,
+        bookingDetails: newBooking,
+      });
+      console.log(`Emitted "newBooking" event to host ${hostIdString} on socket ${hostSocketId}`);
+    } else {
+      console.log(`Host ${hostIdString} is not connected or socket ID not found. No WebSocket event emitted for newBooking.`);
+    }
     
-    console.log(`Emitting "newBooking" event to hostId ${hostId}`);
     res.status(200).json(newBooking);
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Fail to create a new Booking!", error: err.message });
+    console.error("Error creating booking:", err); // Use console.error for errors
+    res.status(400).json({ message: "Failed to create a new Booking!", error: err.message });
   }
 };
 

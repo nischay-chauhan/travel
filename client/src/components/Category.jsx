@@ -7,9 +7,9 @@ const Categories = () => {
 
 
   return (
-    <div className="categories bg-gray-100 p-8">
+    <div className="categories bg-background text-foreground p-8">
       <h1 className="text-4xl font-bold mb-4 text-center">Explore Top Categories</h1>
-      <p className="text-gray-600 mb-8 text-xl text-center">
+      <p className="text-muted-foreground mb-8 text-xl text-center">
         Explore our wide range of vacation rentals that cater to all types of travelers. Immerse yourself in the local culture, enjoy the comforts of home, and create unforgettable memories in your dream destination.
       </p>
 
@@ -27,17 +27,18 @@ const Categories = () => {
               alt={category.label}
               className="w-full h-64 md:h-48 lg:h-40 object-cover rounded-md"
             />
+            {/* Overlay: Use foreground color for themeable tint */}
             <div
-              className={`absolute inset-0 bg-black opacity-30 transition-opacity duration-300 ${
+              className={`absolute inset-0 bg-foreground opacity-30 transition-opacity duration-300 ${
                 hoveredIndex === index ? 'opacity-0' : 'opacity-30'
               }`}
             ></div>
             <div className="absolute inset-0 flex items-center justify-center">
+              {/* Text on item: Use primary-foreground, add drop shadow for readability */}
               <div
-                className={`text-white text-center transform ${
+                className={`text-primary-foreground text-center transform transition-transform duration-300 ease-in-out ${
                   hoveredIndex === index ? 'scale-110' : ''
-                }`}
-                style={{ transition: 'transform 0.3s ease-in-out' }}
+                } [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]`} // Custom drop shadow for better readability
               >
                 <div className="text-2xl">{category.icon}</div>
                 <p className="mt-2">{category.label}</p>

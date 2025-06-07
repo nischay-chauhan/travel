@@ -1,23 +1,21 @@
 import React from 'react';
-import { useNotifications } from '../NotificationProvider';
-
+import { BellRing } from 'lucide-react'; // Example icon
 
 const Notifications = () => {
-  const { notifications } = useNotifications();
-  console.log(notifications)
+  // const { notifications } = useNotifications(); // Removed as context is gone
 
   return (
-    <div className="notifications">
-      <h2>Notifications</h2>
-      {notifications.length > 0 ? (
-        notifications.map((notification, index) => (
-          <div key={index} className="notification">
-            {notification.message}
-          </div>
-        ))
-      ) : (
-        <p>No notifications</p>
-      )}
+    <div className="p-6 bg-card text-card-foreground rounded-lg shadow">
+      <div className="flex flex-col items-center justify-center text-center space-y-4">
+        <BellRing className="w-16 h-16 text-primary" />
+        <h2 className="text-2xl font-semibold">Real-time Notifications via Toasts</h2>
+        <p className="text-muted-foreground max-w-md">
+          New notifications will appear as pop-up toasts in the corner of your screen.
+        </p>
+        <p className="text-sm text-muted-foreground max-w-md">
+          A dedicated page for viewing historical notifications may be available in the future.
+        </p>
+      </div>
     </div>
   );
 };
