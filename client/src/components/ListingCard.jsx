@@ -111,22 +111,26 @@ const ListingCard = ({
           </CarouselContent>
           {listingPhotoPaths && listingPhotoPaths.length > 1 && (
             <>
-              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/75 text-white border-none" onClick={(e) => e.stopPropagation()} />
-              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/75 text-white border-none" onClick={(e) => e.stopPropagation()} />
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground/50 hover:bg-foreground/75 text-background border-none" onClick={(e) => e.stopPropagation()} />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground/50 hover:bg-foreground/75 text-background border-none" onClick={(e) => e.stopPropagation()} />
             </>
           )}
         </Carousel>
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-2 right-2 z-10 rounded-full bg-black/30 hover:bg-black/50 text-white hover:text-white ${isLiked ? "text-red-500 hover:text-red-600 bg-red-500/30 hover:bg-red-500/50" : ""}`}
+          className={`absolute top-2 right-2 z-10 rounded-full transition-colors
+            ${isLiked
+              ? "bg-red-500/30 hover:bg-red-500/50 text-red-500 hover:text-red-600"
+              : "bg-foreground/30 hover:bg-foreground/50 text-background hover:text-background"
+            }`}
           onClick={(e) => {
             e.stopPropagation();
             patchWishList();
           }}
           disabled={!user}
         >
-          <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500" : "fill-transparent stroke-white"}`} />
+          <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500" : "fill-transparent stroke-current"}`} />
           <span className="sr-only">Add to wishlist</span>
         </Button>
       </div>

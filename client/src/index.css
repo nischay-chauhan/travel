@@ -30,14 +30,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 0 0% 13%; /* Dark Gray */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 13%; /* Dark Gray */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 13%; /* Dark Gray */
-    --primary: 350 100% 67%; /* Airbnb Red/Pink */
-    --primary-foreground: 0 0% 100%; /* White */
+    --background: 200 100% 90%; /* Light Blue */
+    --foreground: 220 70% 30%; /* Dark Blue */
+    --card: 200 100% 90%; /* Light Blue */
+    --card-foreground: 220 70% 30%; /* Dark Blue */
+    --popover: 200 100% 90%; /* Light Blue */
+    --popover-foreground: 220 70% 30%; /* Dark Blue */
+    --primary: 220 70% 30%; /* Dark Blue */
+    --primary-foreground: 200 100% 90%; /* Light Blue */
     --secondary: 0 0% 96.1%; /* Light Gray */
     --secondary-foreground: 0 0% 13%; /* Dark Gray */
     --muted: 0 0% 96.1%; /* Light Gray */
@@ -57,14 +57,14 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 13%; /* Dark Gray */
-    --foreground: 0 0% 98%; /* Light Gray */
-    --card: 0 0% 13%; /* Dark Gray */
-    --card-foreground: 0 0% 98%; /* Light Gray */
-    --popover: 0 0% 13%; /* Dark Gray */
-    --popover-foreground: 0 0% 98%; /* Light Gray */
-    --primary: 350 100% 67%; /* Airbnb Red/Pink */
-    --primary-foreground: 0 0% 13%; /* Dark Gray */
+    --background: 220 70% 30%; /* Dark Blue */
+    --foreground: 200 100% 90%; /* Light Blue */
+    --card: 220 70% 30%; /* Dark Blue */
+    --card-foreground: 200 100% 90%; /* Light Blue */
+    --popover: 220 70% 30%; /* Dark Blue */
+    --popover-foreground: 200 100% 90%; /* Light Blue */
+    --primary: 200 100% 90%; /* Light Blue */
+    --primary-foreground: 220 70% 30%; /* Dark Blue */
     --secondary: 0 0% 17.5%; /* Darker Gray */
     --secondary-foreground: 0 0% 98%; /* Light Gray */
     --muted: 0 0% 17.5%; /* Darker Gray */
