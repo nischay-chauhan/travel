@@ -87,6 +87,7 @@ export const getListingData = async(req , res) => {
         } else {
           listings = await Listing.find().populate("creator")
         }
+        console.log(listings)
     
         res.status(200).json({
             status: "success",
