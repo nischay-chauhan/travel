@@ -12,13 +12,12 @@ const CategoryPage = () => {
   const { category } = useParams();
 
   const dispatch = useDispatch();
-  const listingsData = useSelector((state) => state.listings); // Renamed for clarity
+  const listingsData = useSelector((state) => state.listings); 
 
   const getFeedListings = async () => {
-    setLoading(true); // Ensure loading is true at the start of fetch
+    setLoading(true);
     try {
       const response = await fetch(
-        // Ensure your backend API can handle URL encoded categories if they contain spaces or special chars
         `http://localhost:3001/properties?category=${encodeURIComponent(category)}`,
         {
           method: "GET",
@@ -29,13 +28,12 @@ const CategoryPage = () => {
       if (response.ok) {
         dispatch(setListings({ listings: data }));
       } else {
-        // Handle non-OK responses, e.g., show a toast, set an error state
         console.error("Failed to fetch listings:", data.message || response.statusText);
-        dispatch(setListings({ listings: [] })); // Clear previous listings or handle error appropriately
+        dispatch(setListings({ listings: [] })); 
       }
     } catch (err) {
       console.error("Fetch Listings Failed", err.message);
-      dispatch(setListings({ listings: [] })); // Clear listings on error
+      dispatch(setListings({ listings: [] })); 
     } finally {
       setLoading(false);
     }
@@ -44,13 +42,12 @@ const CategoryPage = () => {
   useEffect(() => {
     getFeedListings();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, dispatch]); // Added dispatch to dependency array as it's used in effect
+  }, [category, dispatch]); 
 
-  // Extracted listings array for cleaner access
   const currentListings = listingsData?.listings || [];
 
   return (
-    <div className="pb-12"> {/* Added padding-bottom for spacing */}
+    <div className="pb-12"> 
       <Navbar />
       <div className="container mx-auto px-4 pt-8">
         <h1 className="text-3xl font-semibold mb-8 text-center md:text-left capitalize">
@@ -75,7 +72,7 @@ const CategoryPage = () => {
                       category={listing.category}
                       type={listing.type}
                       price={listing.price}
-                      booking={listing.booking || false} // Ensure booking defaults to false if undefined
+                      booking={listing.booking || false} 
                     />
                   )
                 )}

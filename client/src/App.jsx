@@ -3,8 +3,7 @@ import RootLayout from "./layouts/RootLayout"; // Import RootLayout
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { Toaster as SonnerToaster } from "sonner"; // Renamed to avoid conflict if react-hot-toast is still used elsewhere
-import { toast as sonnerToast } from "sonner"; // Using sonner's toast
+import { Toaster } from "react-hot-toast";
 import CreateListing from "./pages/CreateListing";
 import ListingDetails from "./pages/ListingDetails";
 import TripLists from "./pages/TripLists";
@@ -12,7 +11,7 @@ import WishList from "./pages/WishList";
 import PropertyList from "./pages/PropertyList";
 import ReservationList from "./pages/ReservationList";
 import CategoryPage from "./pages/CategoryPage";
-import NotificationsPage from "./pages/NotificationsPage"; // Will be simplified
+import NotificationsPage from "./pages/NotificationsPage";
 import { useEffect } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from "react-redux";
@@ -91,8 +90,17 @@ const App = () => {
 
   return (
     <>
-      <SonnerToaster richColors position="top-right" /> {/* Using sonner's Toaster */}
-      <RouterProvider router={router} />
+    <div className="min-h-screen bg-background text-foreground">
+    <RouterProvider router={router} />
+    <Toaster position="top-right" toastOptions={{
+      className: "bg-card text-card-foreground",
+      style: {
+        borderRadius: "var(--radius)",
+        background: "hsl(var(--card))",
+        color: "hsl(var(--card-foreground))"
+      }
+    }} />
+  </div>
     </>
   )
 }

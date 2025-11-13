@@ -9,7 +9,7 @@ import "react-date-range/dist/theme/default.css"; // For DateRange picker
 // import "../styles/ListingDetails.css"; // Removed
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -21,13 +21,16 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Minus } from "lucide-react"; // For amenity fallback
+import { Minus, Heart } from "lucide-react"; // For amenity fallback
+import { setWishList } from "../redux/state";
 
 const ListingDetails = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { listingId } = useParams();
-  const [listing, setListing] = useState(null); // Initialize with null
+  const [listing, setListing] = useState(null); 
+  const [isLiked, setIsLiked] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -37,6 +40,44 @@ const ListingDetails = () => {
   ]);
 
   const customerId = useSelector((state) => state?.user?._id);
+  console.log(customerId)
+  const token = useSelector((state) => state?.token);
+  console.log(token)  
+  const wishlist = useSelector((state) => state.user?.wishList || []);
+
+  useEffect(() => {
+    setIsLiked(wishlist?.some((item) => item?._id === listingId));
+  }, [wishlist, listingId]);
+
+  const toggleWishlist = async (e) => {
+    e.stopPropagation();
+    if (!customerId) {
+      toast.error("Please login to add to wishlist");
+      return navigate("/login");
+    }
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/users/${customerId}/${listingId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        dispatch(setWishList(response.data.wishList));
+        toast.success(
+          isLiked ? "Removed from wishlist" : "Added to wishlist"
+        );
+      }
+    } catch (err) {
+      console.log("Add to wishlist failed.", err.message);
+      toast.error("Failed to update wishlist. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const getListingDetails = async () => {
@@ -45,7 +86,12 @@ const ListingDetails = () => {
         const response = await axios.get(
           `http://localhost:3001/properties/${listingId}`
         );
-        setListing(response.data.listing);
+        // Only update if data has changed
+        setListing(prev => {
+          const newData = response.data.listing;
+          return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
+        });
+        console.log(response.data)
       } catch (error) {
         console.error("Failed to fetch listing details:", error);
         toast.error(
@@ -61,14 +107,13 @@ const ListingDetails = () => {
     if (listingId) {
       getListingDetails();
     }
-  }, [listingId, navigate]);
-
+  }, [listingId, navigate]); // Make sure all dependencies are listed
   const handleSelect = (ranges) => {
     setDateRange([ranges.selection]);
   };
 
-  // Ensure dayCount is at least 1 if start and end dates are the same.
   const dayCount = Math.max(1, Math.round((dateRange[0].endDate - dateRange[0].startDate) / (1000 * 60 * 60 * 24)));
+
 
 
   const handleSubmit = async (e) => {
@@ -78,18 +123,18 @@ const ListingDetails = () => {
       return navigate("/login");
     }
 
-    if (!listing || !listing.creator || !listing.creator._id) {
+    if (!listing || !listing.creator) {
         toast.error("Host information is missing. Cannot proceed with booking.");
         return;
     }
 
-    const currentDayCount = Math.max(1, dayCount); // Re-affirm dayCount for safety
+    const currentDayCount = Math.max(1, dayCount); 
 
     try {
       const bookingForm = {
         customerId,
         listingId,
-        hostId: listing.creator._id,
+        hostId: listing.creator,
         startDate: dateRange[0].startDate.toISOString(),
         endDate: dateRange[0].endDate.toISOString(),
         totalPrice: currentDayCount * listing.price,
@@ -97,9 +142,15 @@ const ListingDetails = () => {
 
       const response = await axios.post(
         "http://localhost:3001/bookings/create",
-        bookingForm
+        bookingForm,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        }
       );
-      if (response.status === 200) { // Check for 200 or 201 if your API returns that for creation
+      if (response.status === 200) { 
         openRazorpayPaymentGateway(response.data);
       }
     } catch (error) {
@@ -190,14 +241,28 @@ const ListingDetails = () => {
     <div className="pb-12 bg-background">
       <Navbar />
       <div className="container mx-auto px-4 pt-6">
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">
-          {listing.title}
-        </h1>
-        {/* Location */}
-        <p className="text-lg text-muted-foreground mb-4">
-          {listing.type} in {listing.city}, {listing.province}, {listing.country}
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 break-words">
+              {listing.title}
+            </h1>
+            <p className="text-lg text-muted-foreground mb-4">
+              {listing.type} in {listing.city}, {listing.province}, {listing.country}
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleWishlist}
+            className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label={isLiked ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart
+              className={`h-6 w-6 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+              fill={isLiked ? "currentColor" : "none"}
+            />
+          </Button>
+        </div>
 
         {/* Image Carousel */}
         {listing.listingPhotoPaths && listing.listingPhotoPaths.length > 0 ? (
@@ -257,13 +322,10 @@ const ListingDetails = () => {
                   <h3 className="text-xl font-semibold">
                     Hosted by {listing.creator.firstName} {listing.creator.lastName}
                   </h3>
-                  {/* Add more host details if available, e.g., join date, superhost badge */}
                 </div>
               </div>
             )}
             <Separator />
-
-            {/* Description */}
             <div>
               <h3 className="text-xl font-semibold mb-2">Description</h3>
               <p className="text-foreground whitespace-pre-wrap">
@@ -272,7 +334,6 @@ const ListingDetails = () => {
             </div>
             <Separator />
 
-            {/* Highlight */}
             {listing.highlight && (
               <div>
                 <h3 className="text-xl font-semibold mb-1">{listing.highlight}</h3>
@@ -302,21 +363,20 @@ const ListingDetails = () => {
             </div>
           </div>
 
-          {/* Right Column: Booking Widget */}
           <div className="md:col-span-1">
-            <Card className="sticky top-24 shadow-lg"> {/* Make booking card sticky */}
+            <Card className="sticky top-24 shadow-lg"> 
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Book your stay</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="date-range-calendar-container overflow-x-auto border rounded-md p-1"> {/* Container for date picker + border */}
+                <div className="date-range-calendar-container overflow-x-auto border rounded-md p-1">
                   <DateRange
                     editableDateInputs={true}
                     onChange={handleSelect}
                     moveRangeOnFirstSelection={false}
                     ranges={dateRange}
-                    className="w-full" // Attempt to make it responsive
-                    minDate={new Date()} // Prevent selecting past dates
+                    className="w-full" 
+                    minDate={new Date()} 
                   />
                 </div>
                 <Separator />
@@ -330,7 +390,6 @@ const ListingDetails = () => {
                     </span>
                     <span>${calculatedTotalPrice}</span>
                   </div>
-                  {/* Add other fees like service fee, cleaning fee if applicable */}
                   <div className="flex justify-between font-bold text-lg pt-2">
                     <span>Total price</span>
                     <span>${calculatedTotalPrice}</span>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -21,35 +21,74 @@ const OtpVerificationPage = () => {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Ensure userId is available, otherwise redirect or show error
-  const userId = location.state?.userId;
+  const params = new URLSearchParams(location.search);
+  const userIdFromUrl = params.get('userId');
+  const userIdFromState = location.state?.userId;
 
-  if (!userId) {
-    // Handle case where userId is not passed, maybe redirect to register or show an error
-    // For now, redirecting to register page
-    navigate('/register');
-    toast.error("User ID not found for OTP verification.");
-    return null; // Render nothing while redirecting
-  }
+  const userId = userIdFromUrl || userIdFromState || sessionStorage.getItem('otpUserId');
 
+  useEffect(() => {
+    if (userId) {
+      sessionStorage.setItem('otpUserId', userId);
+    } else {
+      toast.error("User ID not found for OTP verification.");
+      navigate('/register', { replace: true });
+    }
+  }, [userId, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!otp) {
+      toast.error('Please enter the OTP');
+      return;
+    }
+
+    if (!userId) {
+      toast.error('Session expired. Please start the registration again.');
+      navigate('/register', { replace: true });
+      return;
+    }
+
     setIsLoading(true);
+    console.log('Submitting OTP verification with:', { userId, otp });
+
     try {
-      const response = await axios.post('http://localhost:3001/api/verify-otp', { userId, otp });
-      if (response.status === 200) {
-        toast.success('OTP verified successfully! Please login.');
-        navigate('/login');
+      const response = await axios.post('http://localhost:3001/api/verify-otp', {
+        userId,
+        otp
+      });
+
+      console.log('OTP verification response:', response.data);
+
+      if (response.data?.status === 'success') {
+        console.log('OTP verification successful, navigating to login');
+        toast.dismiss();
+        toast.success(response.data.message || 'OTP verified successfully! Please login.');
+
+        localStorage.setItem('otpVerified', 'true');
+
+        setTimeout(() => {
+          navigate('/login', {
+            replace: true,
+            state: {
+              fromOtpVerification: true,
+              email: location.state?.email || ''
+            }
+          });
+          setTimeout(() => sessionStorage.removeItem('otpUserId'), 500);
+        }, 1000);
+      } else {
+        throw new Error(response.data?.message || 'OTP verification failed.');
       }
-      // Axios throws error for non-2xx status, so no need for 'else'
+
     } catch (error) {
-      console.error("OTP Verification failed:", error.response || error.message);
-      toast.error(
+      console.error("OTP Verification failed:", error);
+      const errorMessage =
         error.response?.data?.message ||
         error.response?.data?.error ||
-        "Invalid OTP or error verifying. Please try again."
-      );
+        'An error occurred during OTP verification.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -93,8 +132,7 @@ const OtpVerificationPage = () => {
         </CardContent>
         <CardFooter className="text-center block">
           <p className="text-sm">
-            Didn't receive OTP?{" "}
-            {/* Basic resend functionality can be added here later if needed */}
+            Didn’t receive OTP?{' '}
             <Button variant="link" asChild className="p-0 h-auto">
               <Link to="/register">Try registering again</Link>
             </Button>
