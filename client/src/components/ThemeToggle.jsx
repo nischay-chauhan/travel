@@ -1,66 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion'; // Import motion and AnimatePresence
 
-const iconVariants = {
-  initial: { opacity: 0, scale: 0.6, rotate: -90 },
-  animate: { opacity: 1, scale: 1, rotate: 0, transition: { duration: 0.25, ease: "easeOut" } },
-  exit: { opacity: 0, scale: 0.6, rotate: 90, transition: { duration: 0.25, ease: "easeIn" } },
-};
+import { Moon, Sun } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
-    } else {
-      // Default to light theme if no preference is saved
-      document.documentElement.classList.remove('dark');
-    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-      <AnimatePresence mode="wait" initial={false}>
-        {theme === 'light' ? (
-          <motion.div
-            key="moon"
-            variants={iconVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <Moon className="h-[1.2rem] w-[1.2rem]" />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="sun"
-            variants={iconVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <Sun className="h-[1.2rem] w-[1.2rem]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggleTheme}
+      className="w-9 h-9"
+    >
+      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

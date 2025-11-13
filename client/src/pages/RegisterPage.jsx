@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { UploadCloud, Loader2 } from 'lucide-react'; // Replaced FaCloudUploadAlt, Added Loader2
+import { UploadCloud, Loader2, Eye, EyeOff } from 'lucide-react'; 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion"; // Import motion
+import { motion } from "framer-motion"; 
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -15,16 +15,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // For image preview
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; 
 
-const cardVariants = { // Define cardVariants
+const cardVariants = { 
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
 const RegisterPage = () => {
-  const navigate = useNavigate(); // Changed Navigate to navigate
-  const [formData, setFormData] = useState({ // Changed formdata to formData (convention)
+  const navigate = useNavigate(); 
+  const [formData, setFormData] = useState({ 
     firstName: "",
     lastName: "",
     email: "",
@@ -32,9 +32,11 @@ const RegisterPage = () => {
     confirmPassword: "",
     profileImage: null,
   });
-  const [previewImage, setPreviewImage] = useState(""); // For image preview URL
+  const [previewImage, setPreviewImage] = useState(""); 
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -44,7 +46,7 @@ const RegisterPage = () => {
         ...formData,
         profileImage: file,
       });
-      setPreviewImage(URL.createObjectURL(file)); // Create preview URL
+      setPreviewImage(URL.createObjectURL(file)); 
     } else {
       setFormData({
         ...formData,
@@ -61,20 +63,19 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading to true
-
+    setIsLoading(true); 
     if (!passwordMatch) {
       toast.error("Passwords do not match!");
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false); 
       return;
     }
     if (!formData.profileImage) {
         toast.error("Profile image is required.");
-        setIsLoading(false); // Reset loading state
+        setIsLoading(false); 
         return;
     }
 
-    const data = new FormData(); // Changed variable name from formData to data
+    const data = new FormData(); 
     for (const key in formData) {
       data.append(key, formData[key]);
     }
@@ -88,16 +89,16 @@ const RegisterPage = () => {
         toast.success("User registered successfully!");
         navigate("/verify-otp", { state: { userId: response.data.userId } });
       }
-      // No need for else block here, as axios throws an error for non-2xx responses, which is caught below.
+      
     } catch (err) {
       console.error("Error registering:", err.response || err.message);
       toast.error(
         err.response?.data?.message ||
-        err.response?.data?.error || // Check for error.response.data.error
+        err.response?.data?.error || 
         "Registration failed. Please try again."
       );
     } finally {
-      setIsLoading(false); // Set loading to false
+      setIsLoading(false); 
     }
   };
 
@@ -177,28 +178,56 @@ const RegisterPage = () => {
 
             <div className="space-y-1">
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="••••••••"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  placeholder="••••••••"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               {!passwordMatch && formData.confirmPassword !== "" && (
                 <p className="text-sm text-destructive pt-1">
                   Passwords do not match.
