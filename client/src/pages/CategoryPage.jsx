@@ -18,7 +18,7 @@ const CategoryPage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/properties?category=${encodeURIComponent(category)}`,
+        `/properties?category=${encodeURIComponent(category)}`,
         {
           method: "GET",
         }

@@ -24,7 +24,7 @@ const TripLists = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/${userId}/trips`
+        `/users/${userId}/trips`
       );
       dispatch(setTripList(response.data));
     } catch (error) {

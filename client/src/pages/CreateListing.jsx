@@ -146,7 +146,7 @@ const CreateListing = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/properties/create",
+        "/properties/create",
         listingData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

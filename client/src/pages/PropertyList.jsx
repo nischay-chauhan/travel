@@ -25,7 +25,7 @@ const PropertyList = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/${user._id}/properties`
+        `/users/${user._id}/properties`
       );
       dispatch(setPropertyList(response.data));
     } catch (err) {

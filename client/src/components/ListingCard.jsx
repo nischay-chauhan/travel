@@ -58,7 +58,7 @@ const ListingCard = ({
         return; 
       } 
       const response = await axios.patch( 
-        `http://localhost:3001/users/${user?._id}/${listingId}` 
+        `/users/${user?._id}/${listingId}` 
       ); 
       dispatch(setWishList(response.data.wishList)); 
       toast.success(isLiked ? "Removed from wishlist" : "Added to wishlist"); 
@@ -103,7 +103,7 @@ const ListingCard = ({
           {listingPhotoPaths?.length > 0 ? ( 
             <> 
               <img 
-                src={`http://localhost:3001/${listingPhotoPaths[currentIndex]?.replace("public", "")}`} 
+                src={`/${listingPhotoPaths[currentIndex]?.replace("public", "")}`} 
                 alt={`photo ${currentIndex + 1}`} 
                 className="w-full h-full object-cover" 
               /> 

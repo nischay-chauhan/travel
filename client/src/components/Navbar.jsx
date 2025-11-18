@@ -29,7 +29,7 @@ const Navbar = () => {
   };
 
   const profileSrc = user && user.profileImagePath
-    ? `http://localhost:3001/${user.profileImagePath.replace("public", "")}`
+    ? `/${user.profileImagePath.replace("public", "")}`
     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
   const handleSearch = () => {

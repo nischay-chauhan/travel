@@ -54,7 +54,7 @@ const OtpVerificationPage = () => {
     console.log('Submitting OTP verification with:', { userId, otp });
 
     try {
-      const response = await axios.post('http://localhost:3001/api/verify-otp', {
+      const response = await axios.post('/api/verify-otp', {
         userId,
         otp
       });

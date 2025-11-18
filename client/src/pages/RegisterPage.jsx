@@ -82,7 +82,7 @@ const RegisterPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/register",
+        "/api/register",
         data
       );
       if (response.status === 200) {

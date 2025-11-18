@@ -58,7 +58,7 @@ const ListingDetails = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:3001/users/${customerId}/${listingId}`,
+        `/users/${customerId}/${listingId}`,
         {},
         {
           headers: {
@@ -84,7 +84,7 @@ const ListingDetails = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `http://localhost:3001/properties/${listingId}`
+          `/properties/${listingId}`
         );
         // Only update if data has changed
         setListing(prev => {
@@ -141,7 +141,7 @@ const ListingDetails = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/bookings/create",
+        "/bookings/create",
         bookingForm,
         {
           headers: {
@@ -170,7 +170,7 @@ const ListingDetails = () => {
       handler: async function (response) {
         try {
           const verificationResponse = await axios.post(
-            "http://localhost:3001/bookings/verify-payment",
+            "/bookings/verify-payment",
             {
               order_id: response.razorpay_order_id,
               payment_id: response.razorpay_payment_id,
@@ -211,7 +211,7 @@ const ListingDetails = () => {
       rzp1.on('payment.failed', function (response){
         toast.error(`Payment failed: ${response.error.description}`);
         // Handle payment failure, e.g., update booking status on server
-        axios.post(`http://localhost:3001/bookings/payment-failed`, {
+        axios.post(`/bookings/payment-failed`, {
             bookingId: booking._id,
             razorpayOrderId: response.error.metadata.order_id,
             razorpayPaymentId: response.error.metadata.payment_id,
@@ -272,7 +272,7 @@ const ListingDetails = () => {
                 <CarouselItem key={index}>
                   <div className="aspect-[16/9] w-full"> {/* Maintain aspect ratio */}
                     <img
-                      src={`http://localhost:3001/${photo.replace("public", "")}`}
+                      src={`/${photo.replace("public", "")}`}
                       alt={`Listing photo ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -309,8 +309,8 @@ const ListingDetails = () => {
                 <Avatar className="h-14 w-14">
                   <AvatarImage
                     src={listing.creator.profileImagePath
-                           ? `http://localhost:3001/${listing.creator.profileImagePath.replace("public", "")}`
-                           : undefined } // undefined src will trigger fallback
+                           ? `/${listing.creator.profileImagePath.replace("public", "")}`
+                           : undefined }
                     alt={`${listing.creator.firstName} ${listing.creator.lastName}`}
                   />
                   <AvatarFallback>

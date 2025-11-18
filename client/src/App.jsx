@@ -45,7 +45,7 @@ const App = () => {
     // Ensure socket connection is only established if user is logged in,
     // or adjust server-side to handle anonymous sockets gracefully if needed.
     // For now, connecting anyway and registering if user exists.
-    const socket = io('http://localhost:3001', {
+    const socket = io({
       reconnectionAttempts: 3, // Example: limit reconnection attempts
       timeout: 10000, // Example: connection timeout
     });
