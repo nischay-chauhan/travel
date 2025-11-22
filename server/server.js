@@ -6,6 +6,7 @@ import listingRoutes from "./routes/listing.js";
 import authRoutes from "./routes/auth.js";
 import bookingRoutes from "./routes/booking.js";
 import userRoutes from "./routes/user.js";
+import chatRoutes from "./routes/chat.js";
 import http from "http";
 import { Server } from "socket.io";
 import path from "path";
@@ -55,6 +56,18 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Listen for sending a message
+  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+    const receiverSocketId = userSockets[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", {
+        senderId,
+        text,
+        createdAt: new Date(),
+      });
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     // Find and remove user from userSockets map
@@ -84,6 +97,7 @@ app.use('/api', authRoutes);
 app.use('/properties', listingRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/users', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 // SPA fallback - send index.html for all non-API routes
 app.get("*", (req, res) => {
