@@ -10,6 +10,18 @@
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = stored ? stored === 'dark' : prefersDark;
+          document.documentElement.classList.toggle('dark', isDark);
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
     <title>TOUR</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>

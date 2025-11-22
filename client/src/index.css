@@ -7,6 +7,46 @@
 
 @layer base {
   :root {
+    /* Light mode (default) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 278 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 196 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 278 100% 60%;
+
+    --radius: 0.75rem;
+
+    --neon-blue: 196 100% 50%;
+    --neon-purple: 278 100% 70%;
+    --neon-pink: 330 100% 70%;
+  }
+}
+
+@layer base {
+  .dark {
+    /* Dark mode (matches current design) */
     --background: 0 0% 5%;
     --foreground: 222.2 84% 94.9%;
 
@@ -50,7 +90,7 @@
 
   body {
     @apply bg-background text-foreground overflow-x-hidden;
-    background: radial-gradient(ellipse at center, hsl(var(--background)) 0%, #000000 100%);
+    background: hsl(var(--background));
   }
 
   html {

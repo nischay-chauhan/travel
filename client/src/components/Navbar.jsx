@@ -39,13 +39,13 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-black/80 backdrop-blur-md border-b border-border/20 text-foreground sticky top-0 z-50 shadow-lg">
+    <header className="bg-background/80 backdrop-blur-md border-b border-border/20 text-foreground sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-2 text-2xl font-bold tracking-tight text-primary hover:text-primary/80 transition-colors duration-200"
+            className="flex items-center space-x-2 text-2xl font-bold tracking-tight text-primary hover:text-blue-300 transition-all duration-200 transform ease-out hover:scale-105"
           >
             <Globe className="w-8 h-8 text-blue-400" />
             <span className="text-blue-400">TOURIST</span>
@@ -59,12 +59,12 @@ const Navbar = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-4 pr-12 py-2 w-full rounded-full border-2 border-gray-700 bg-gray-900/80 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                className="pl-4 pr-12 py-2 w-full rounded-full border-2 border-border bg-card text-foreground placeholder-muted-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
               />
               <Button
                 onClick={handleSearch}
                 size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white p-2 h-8 w-8"
+                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white p-2 h-8 w-8 transition-transform duration-200 ease-out transform hover:scale-105"
               >
                 <SearchIcon className="h-4 w-4" />
               </Button>
@@ -76,20 +76,20 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               asChild 
-              className="text-gray-300 hover:text-white hover:bg-gray-800 rounded-full px-4 py-2 font-medium transition-all duration-200"
+              className="text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-4 py-2 font-medium transition-all duration-200 transform ease-out hover:scale-105"
             >
               <Link to={user ? "/create-listing" : "/login"}>Become a Host</Link>
             </Button>
 
             <ThemeToggle />
 
-            <div className="flex items-center space-x-1 border border-gray-700 rounded-full p-1 hover:shadow-lg hover:shadow-blue-500/10 transition-shadow duration-200 bg-gray-900/50">
-              <Button variant="ghost" size="sm" className="rounded-full p-2 text-gray-300 hover:bg-gray-800">
+            <div className="flex items-center space-x-1 border border-border hover:border-foreground/30 rounded-full p-1 hover:shadow-lg hover:shadow-blue-500/20 bg-background/50 transition-all duration-200 transform ease-out hover:scale-[1.02]">
+              <Button variant="ghost" size="sm" className="rounded-full p-2 text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-transform duration-200 ease-out transform hover:scale-105">
                 <Menu className="h-4 w-4" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative rounded-full p-1 hover:bg-gray-800">
+                  <Button variant="ghost" className="relative rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition-transform duration-200 ease-out transform hover:scale-105">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={profileSrc} alt="profile" />
                       <AvatarFallback className="bg-blue-600 text-white">
@@ -98,7 +98,7 @@ const Navbar = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 mt-2 bg-gray-900 border border-gray-800 text-white" align="end">
+                <DropdownMenuContent className="w-56 mt-2 bg-popover border border-border text-foreground" align="end">
                   {!user ? (
                     <>
                       <DropdownMenuItem asChild>
@@ -139,7 +139,7 @@ const Navbar = () => {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout} className="w-full flex items-center cursor-pointer text-destructive">
+                      <DropdownMenuItem onClick={handleLogout} className="w-full flex items-center cursor-pointer text-red-400 hover:text-red-200 hover:bg-red-600/20 rounded-md transition-all duration-200 ease-out hover:scale-[1.02] hover:ring-1 hover:ring-red-500/30">
                         <LogOut className="mr-3 h-4 w-4" /> Log out
                       </DropdownMenuItem>
                     </>
@@ -153,7 +153,7 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="rounded-full text-gray-300 hover:bg-gray-800 hover:text-white transition-colors duration-200"
+              className="rounded-full text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-105"
               onClick={() => document.getElementById('mobile-search').focus()}
             >
               <SearchIcon className="h-5 w-5" />
@@ -164,13 +164,13 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="rounded-full text-gray-300 hover:bg-gray-800 hover:text-white transition-colors duration-200"
+                  className="rounded-full text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-105"
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 p-0 bg-gray-900/95 backdrop-blur-md border-l border-gray-800 text-white">
+              <SheetContent side="right" className="w-80 p-0 bg-background/95 backdrop-blur-md border-l border-border text-foreground">
                 <div className="flex flex-col h-full">
                   <SheetHeader className="p-6 border-b border-gray-800">
                     <SheetTitle asChild>
@@ -201,18 +201,18 @@ const Navbar = () => {
                       </div>
 
                       <form onSubmit={handleSearch} className="relative mb-6">
-                        <Input
+                        <Input 
                           id="mobile-search"
                           type="search"
                           placeholder="Search destinations..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          className="pl-4 pr-10 py-3 w-full rounded-full border-2 border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                          className="pl-4 pr-10 py-3 w-full rounded-full border-2 border-border bg-card text-foreground placeholder-muted-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                         />
                         <Button
                           type="submit"
                           size="sm"
-                          className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white p-1 h-8 w-8"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white p-1 h-8 w-8 transition-transform duration-200 ease-out transform hover:scale-105"
                         >
                           <SearchIcon className="h-3 w-3" />
                         </Button>
@@ -222,7 +222,7 @@ const Navbar = () => {
                         {user ? (
                           <>
                             <SheetClose asChild>
-                              <Button variant="ghost" asChild className="w-full justify-start text-base font-medium h-14 rounded-lg text-white hover:bg-gray-800 transition-colors duration-200">
+                              <Button variant="ghost" asChild className="w-full justify-start text-base font-medium h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
                                 <Link to="/">
                                   <Home className="mr-3 h-5 w-5" />
                                   Home
@@ -230,7 +230,7 @@ const Navbar = () => {
                               </Button>
                             </SheetClose>
                             <SheetClose asChild>
-                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-white hover:bg-gray-800 transition-colors duration-200">
+                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
                                 <Link to={`/${user._id}/trips`}>
                                   <List className="mr-3 h-5 w-5" />
                                   Your trips
@@ -238,7 +238,7 @@ const Navbar = () => {
                               </Button>
                             </SheetClose>
                             <SheetClose asChild>
-                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-white hover:bg-gray-800 transition-colors duration-200">
+                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
                                 <Link to={`/${user._id}/wishList`}>
                                   <Heart className="mr-3 h-5 w-5" />
                                   Wishlists
@@ -246,7 +246,7 @@ const Navbar = () => {
                               </Button>
                             </SheetClose>
                             <SheetClose asChild>
-                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-white hover:bg-gray-800 transition-colors duration-200">
+                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
                                 <Link to={`/${user._id}/properties`}>
                                   <Building className="mr-3 h-5 w-5" />
                                   Your properties
@@ -255,7 +255,7 @@ const Navbar = () => {
                             </SheetClose>
                             <div className="border-t border-gray-800 pt-2 mt-2">
                               <SheetClose asChild>
-                                <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-white hover:bg-gray-800 transition-colors duration-200">
+                                <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
                                   <Link to="/create-listing">
                                     <PlusCircle className="mr-3 h-5 w-5" />
                                     Host your home
@@ -266,7 +266,7 @@ const Navbar = () => {
                                 <Button
                                   onClick={handleLogout}
                                   variant="ghost"
-                                  className="w-full justify-start text-base h-14 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors duration-200"
+                                  className="w-full justify-start text-base h-14 rounded-lg text-red-400 hover:text-red-200 hover:bg-red-600/20 hover:ring-1 hover:ring-red-500/30 transition-all duration-200 transform ease-out hover:scale-105"
                                 >
                                   <LogOut className="mr-3 h-5 w-5" />
                                   Log out
@@ -277,12 +277,12 @@ const Navbar = () => {
                         ) : (
                           <>
                             <SheetClose asChild>
-                              <Button variant="default" asChild className="w-full justify-center text-base h-14 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-200">
+                              <Button variant="default" asChild className="w-full justify-center text-base h-14 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 transform ease-out hover:scale-105">
                                 <Link to="/login">Log in</Link>
                               </Button>
                             </SheetClose>
                             <SheetClose asChild>
-                              <Button variant="outline" asChild className="w-full justify-center text-base h-14 rounded-lg border-gray-700 text-white hover:bg-gray-800 transition-colors duration-200">
+                              <Button variant="outline" asChild className="w-full justify-center text-base h-14 rounded-lg border-border text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-105">
                                 <Link to="/register">Sign up</Link>
                               </Button>
                             </SheetClose>

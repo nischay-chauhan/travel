@@ -23,7 +23,7 @@ const FloatingHomeCards = () => {
         <Card className="w-64 h-40 bg-white/90 backdrop-blur-sm shadow-2xl overflow-hidden">
           <div className="relative h-full">
             <img 
-              src="/api/placeholder/400/300?text=Cozy Apartment" 
+              src="/travel.jpg" 
               alt="Cozy Apartment"
               className="w-full h-full object-cover"
             />
@@ -61,7 +61,7 @@ const FloatingHomeCards = () => {
         <Card className="w-64 h-40 bg-white/90 backdrop-blur-sm shadow-2xl overflow-hidden">
           <div className="relative h-full">
             <img 
-              src="/api/placeholder/400/300?text=Beach Villa" 
+              src="/travel2.jpg" 
               alt="Beach Villa"
               className="w-full h-full object-cover"
             />
