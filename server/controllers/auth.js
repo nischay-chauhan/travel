@@ -4,33 +4,34 @@ import User from "../models/User.js"
 import crypto from "crypto";
 import nodemailer from "nodemailer"
 import dotenv from "dotenv"
+import { uploadProfileToCloudinary } from "../config/multerCloudinary.js";
 
 dotenv.config();
 export const register = async (req, res) => {
-    try{
-        const {firstName , lastName , email , password} = req.body
+    try {
+        const { firstName, lastName, email, password } = req.body
 
         const profileImage = req.file
-        if(!profileImage){
+        if (!profileImage) {
             return res.status(400).json({
-                status : 'failure',
-                error : 'Profile image is required'
+                status: 'failure',
+                error: 'Profile image is required'
             })
         }
 
-        const profileImagePath = profileImage.path
+        const profileImagePath = await uploadProfileToCloudinary(profileImage);
 
-        const existingUser = await User.findOne({email})
-        if(existingUser){
+        const existingUser = await User.findOne({ email })
+        if (existingUser) {
             return res.status(409).json({
-                status : 'failure',
-                error : 'User already exists'
+                status: 'failure',
+                error: 'User already exists'
             })
         }
         const salt = await bcrypt.genSalt()
-        const hashedPassword = await bcrypt.hash(password , salt)
+        const hashedPassword = await bcrypt.hash(password, salt)
 
-       
+
         const otp = crypto.randomBytes(3).toString('hex');
         const otpExpiry = Date.now() + 3600000; // 1 hour expiry
 
@@ -38,60 +39,59 @@ export const register = async (req, res) => {
             firstName,
             lastName,
             email,
-            password : hashedPassword,
+            password: hashedPassword,
             profileImagePath,
             otp,
             otpExpiry,
-            isVerified : false
+            isVerified: false
         })
 
         await newUser.save()
-        //now i have to send OTP to user mail
 
         const transporter = nodemailer.createTransport({
-            service : 'gmail',
-            auth : {
-                user : process.env.MAIL_USER,
-                pass : process.env.MAIL_PASS
+            service: 'gmail',
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS
             }
         })
 
         const mailOptions = {
-            from : process.env.MAIL_USER,
-            to : email,
-            subject : 'Verify your account',
-            text : `Your OTP is ${otp}. It is a only valid for an Hour.`
+            from: process.env.MAIL_USER,
+            to: email,
+            subject: 'Verify your account',
+            text: `Your OTP is ${otp}. It is a only valid for an Hour.`
         }
         console
         await transporter.sendMail(mailOptions);
 
-    
+
 
         res.status(200).json({
-            status : 'success',
-            message : 'User created successfully , check your mail for your otp',
-            user:newUser,
-            userId : newUser._id
+            status: 'success',
+            message: 'User created successfully , check your mail for your otp',
+            user: newUser,
+            userId: newUser._id
         })
 
-    }catch(error){
+    } catch (error) {
         console.log(error)
         res.status(500).json({
-            status : 'failure',
-            error : error
+            status: 'failure',
+            error: error
         })
     }
 }
 
 export const login = async (req, res) => {
-    try{
+    try {
 
-        const {email , password} = req.body
-        const user = await User.findOne({email})
-        if(!user){
+        const { email, password } = req.body
+        const user = await User.findOne({ email })
+        if (!user) {
             return res.status(404).json({
-                status : 'failure',
-                error : 'User not found & not exist'
+                status: 'failure',
+                error: 'User not found & not exist'
             })
         }
 
@@ -102,49 +102,49 @@ export const login = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(password , user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
 
-        if(!isMatch){
+        if (!isMatch) {
             return res.status(400).json({
-                status : 'failure',
-                error : 'Invalid credentials'
+                status: 'failure',
+                error: 'Invalid credentials'
             })
         }
 
-        const token = jwt.sign({id : user._id} , process.env.JWT_SECRET)
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
         delete user.password
         res.status(200).json({
-            status : "success",
+            status: "success",
             token,
             user,
         })
 
-    }catch(error){
+    } catch (error) {
         console.log(error)
         res.status(500).json({
-            status : 'failure',
-            error : "Internal server error "
+            status: 'failure',
+            error: "Internal server error "
         })
     }
 }
 
 
 
-export const verifyOtp = async(req , res) => {
-    try{
-        const {userId , otp} = req.body
+export const verifyOtp = async (req, res) => {
+    try {
+        const { userId, otp } = req.body
         const user = await User.findById(userId)
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                status : 'failure',
-                error : 'User not found'
+                status: 'failure',
+                error: 'User not found'
             })
         }
 
-        if(user.otp !== otp || Date.now() > user.otpExpiry){
+        if (user.otp !== otp || Date.now() > user.otpExpiry) {
             return res.status(400).json({
-                status : 'failure',
-                error : 'Invalid OTP'
+                status: 'failure',
+                error: 'Invalid OTP'
             })
         }
 
@@ -154,14 +154,14 @@ export const verifyOtp = async(req , res) => {
         await user.save()
 
         res.status(200).json({
-            status : 'success',
-            message : 'User verified successfully'
+            status: 'success',
+            message: 'User verified successfully'
         })
-    }catch(error){
+    } catch (error) {
         console.log(error)
         res.status(500).json({
-            status : 'failure',
-            error : 'Internal server error while checking the OTP'
+            status: 'failure',
+            error: 'Internal server error while checking the OTP'
         })
     }
 }

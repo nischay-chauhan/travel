@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, Search as SearchIcon, LogOut, UserCircle, Home, List, Heart, Building, CalendarCheck, PlusCircle, Globe } from "lucide-react";
+import { Menu, Search as SearchIcon, LogOut, UserCircle, Home, List, Heart, Building, CalendarCheck, PlusCircle, Globe, MessageCircle } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import ThemeToggle from "./ThemeToggle";
@@ -29,7 +29,7 @@ const Navbar = () => {
   };
 
   const profileSrc = user && user.profileImagePath
-    ? `/${user.profileImagePath.replace("public", "")}`
+    ? `${user.profileImagePath.replace("public", "")}`
     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
   const handleSearch = () => {
@@ -42,9 +42,8 @@ const Navbar = () => {
     <header className="bg-background/80 backdrop-blur-md border-b border-border/20 text-foreground sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 text-2xl font-bold tracking-tight text-primary hover:text-blue-300 transition-all duration-200 transform ease-out hover:scale-105"
           >
             <Globe className="w-8 h-8 text-blue-400" />
@@ -71,11 +70,10 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              asChild 
+            <Button
+              variant="ghost"
+              asChild
               className="text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-4 py-2 font-medium transition-all duration-200 transform ease-out hover:scale-105"
             >
               <Link to={user ? "/create-listing" : "/login"}>Become a Host</Link>
@@ -132,6 +130,11 @@ const Navbar = () => {
                           <CalendarCheck className="mr-3 h-4 w-4" /> Reservations
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/chats" className="w-full flex items-center cursor-pointer">
+                          <MessageCircle className="mr-3 h-4 w-4" /> Chats
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link to="/create-listing" className="w-full flex items-center cursor-pointer">
@@ -150,9 +153,9 @@ const Navbar = () => {
           </nav>
 
           <div className="lg:hidden flex items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="rounded-full text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-105"
               onClick={() => document.getElementById('mobile-search').focus()}
             >
@@ -161,9 +164,9 @@ const Navbar = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="rounded-full text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-105"
                 >
                   <Menu className="h-5 w-5" />
@@ -201,7 +204,7 @@ const Navbar = () => {
                       </div>
 
                       <form onSubmit={handleSearch} className="relative mb-6">
-                        <Input 
+                        <Input
                           id="mobile-search"
                           type="search"
                           placeholder="Search destinations..."
@@ -250,6 +253,22 @@ const Navbar = () => {
                                 <Link to={`/${user._id}/properties`}>
                                   <Building className="mr-3 h-5 w-5" />
                                   Your properties
+                                </Link>
+                              </Button>
+                            </SheetClose>
+                            <SheetClose asChild>
+                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
+                                <Link to={`/${user._id}/reservation`}>
+                                  <CalendarCheck className="mr-3 h-5 w-5" />
+                                  Reservations
+                                </Link>
+                              </Button>
+                            </SheetClose>
+                            <SheetClose asChild>
+                              <Button variant="ghost" asChild className="w-full justify-start text-base h-14 rounded-lg text-foreground/80 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform ease-out hover:scale-[1.02]">
+                                <Link to="/chats">
+                                  <MessageCircle className="mr-3 h-5 w-5" />
+                                  Chats
                                 </Link>
                               </Button>
                             </SheetClose>

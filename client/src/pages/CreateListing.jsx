@@ -1,10 +1,10 @@
 import Navbar from "../components/Navbar";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { categories, facilities, types } from "../data";
-import Place from "../components/CreateListing/Place"; // Will refactor later
-import GuestCounter from "../components/CreateListing/GuestCounter"; // Will refactor later
+import Place from "../components/CreateListing/Place";
+import GuestCounter from "../components/CreateListing/GuestCounter";
 import { useState } from "react";
-import { Trash2, UploadCloud, GripVertical } from "lucide-react"; // Replaced BiTrash, BiUpload
+import { Trash2, UploadCloud, GripVertical } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
@@ -14,10 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"; // For horizontal scroll of photos
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const CreateListing = () => {
-  const navigate = useNavigate(); // Changed Navigate to navigate
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState([]);
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
@@ -55,16 +55,16 @@ const CreateListing = () => {
   };
 
   const handleUploadPhotos = (e) => {
-    const newPhotos = Array.from(e.target.files); // Ensure it's an array
+    const newPhotos = Array.from(e.target.files);
     setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
-    e.target.value = null; // Reset file input
+    e.target.value = null;
   };
 
   const handleDragPhoto = (result) => {
     if (!result.destination) return;
     const items = Array.from(photos);
-    const [reorderedItem] = items.splice(result.source.index, 1); // Corrected variable name
-    items.splice(result.destination.index, 0, reorderedItem); // Corrected variable name
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
 
     setPhotos(items);
   };
@@ -77,13 +77,13 @@ const CreateListing = () => {
 
   const handleChangeDescription = (e) => {
     const { name, value } = e.target;
-    setFormDescription((prev) => ({ // Use functional update
+    setFormDescription((prev) => ({
       ...prev,
-      [name]: name === "price" ? Math.max(0, parseFloat(value)) : value, // Ensure price is not negative
+      [name]: name === "price" ? Math.max(0, parseFloat(value)) : value,
     }));
   };
 
-  const creatorId = useSelector((state) => state.user?._id); // Safe access
+  const creatorId = useSelector((state) => state.user?._id);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,7 +105,7 @@ const CreateListing = () => {
     listingData.append("bedroomCount", bedroomCount.toString());
     listingData.append("bedCount", bedCount.toString());
     listingData.append("bathroomCount", bathroomCount.toString());
-    listingData.append("amenities", amenities.join(",")); // Join amenities array into string
+    listingData.append("amenities", amenities.join(","));
     listingData.append("title", formDescription.title);
     listingData.append("description", formDescription.description);
     listingData.append("highlight", formDescription.highlight);
@@ -122,25 +122,25 @@ const CreateListing = () => {
 
     // More robust required fields check
     const requiredFields = {
-        category, type,
-        streetAddress: formLocation.streetAddress,
-        city: formLocation.city,
-        province: formLocation.province,
-        country: formLocation.country,
-        title: formDescription.title,
-        description: formDescription.description,
-        price: formDescription.price
+      category, type,
+      streetAddress: formLocation.streetAddress,
+      city: formLocation.city,
+      province: formLocation.province,
+      country: formLocation.country,
+      title: formDescription.title,
+      description: formDescription.description,
+      price: formDescription.price
     };
 
     for (const [fieldName, fieldValue] of Object.entries(requiredFields)) {
-        if (!fieldValue || (typeof fieldValue === 'string' && fieldValue.trim() === "") || (typeof fieldValue === 'number' && fieldValue <=0 && fieldName === 'price') ) {
-            toast.error(`Please fill in the '${fieldName}' field.`);
-            return;
-        }
+      if (!fieldValue || (typeof fieldValue === 'string' && fieldValue.trim() === "") || (typeof fieldValue === 'number' && fieldValue <= 0 && fieldName === 'price')) {
+        toast.error(`Please fill in the '${fieldName}' field.`);
+        return;
+      }
     }
     if (amenities.length === 0) {
-        toast.error("Please select at least one amenity.");
-        return;
+      toast.error("Please select at least one amenity.");
+      return;
     }
 
 
@@ -155,7 +155,7 @@ const CreateListing = () => {
         toast.success("Listing created successfully!");
         navigate("/");
       } else {
-         // This might not be hit if server throws error for non-2xx
+        // This might not be hit if server throws error for non-2xx
         toast.error(response.data.message || "Failed to create listing.");
       }
     } catch (error) {
@@ -184,7 +184,6 @@ const CreateListing = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-12">
-          {/* Section 1: About the Place */}
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Step 1: Tell us about Your Place</CardTitle>
@@ -196,10 +195,11 @@ const CreateListing = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {categories?.map((item) => (
                     <Button
+                      type="button"
                       key={item.label}
                       variant={category === item.label ? "default" : "outline"}
                       onClick={() => setCategory(item.label)}
-                      className="h-auto py-4 flex flex-col items-center justify-center space-y-2 text-center"
+                      className="h-auto py-4 flex flex-col items-center justify-center space-y-2 text-center hover:border-primary transition-all"
                     >
                       <span className="text-3xl">{item.icon}</span>
                       <span className="text-sm">{item.label}</span>
@@ -213,14 +213,15 @@ const CreateListing = () => {
                 <div className="space-y-3">
                   {types?.map((item) => (
                     <Button
+                      type="button"
                       key={item.name}
                       variant={type === item.name ? "default" : "outline"}
                       onClick={() => setType(item.name)}
-                      className="w-full h-auto py-4 flex justify-between items-center text-left"
+                      className="w-full h-auto py-4 flex justify-between items-center text-left hover:border-primary transition-all"
                     >
                       <div>
                         <h4 className="font-semibold">{item.name}</h4>
-                        <p className="text-xs text-muted-foreground">{item.description}</p>
+                        <p className="text-xs opacity-75">{item.description}</p>
                       </div>
                       <span className="text-2xl ml-4">{item.icon}</span>
                     </Button>
@@ -228,13 +229,11 @@ const CreateListing = () => {
                 </div>
               </div>
 
-              {/* Placeholder for Place component - to be refactored separately */}
               <Place formLocation={formLocation} setFormLocation={setFormLocation} />
 
               <div>
                 <h3 className="text-xl font-semibold mb-4">Share some basics about your place</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {/* Placeholders for GuestCounter components - to be refactored separately */}
                   <GuestCounter label="Guests" count={guestCount} setCount={setGuestCount} />
                   <GuestCounter label="Bedrooms" count={bedroomCount} setCount={setBedroomCount} />
                   <GuestCounter label="Beds" count={bedCount} setCount={setBedCount} />
@@ -244,7 +243,6 @@ const CreateListing = () => {
             </CardContent>
           </Card>
 
-          {/* Section 2: Make it Stand Out */}
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Step 2: Make Your place Stand Out</CardTitle>
@@ -256,10 +254,11 @@ const CreateListing = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {facilities?.map((item) => (
                     <Button
+                      type="button"
                       key={item.name}
                       variant={amenities.includes(item.name) ? "default" : "outline"}
                       onClick={() => handleSelectAmenities(item.name)}
-                      className="h-auto py-3 flex flex-col items-center justify-center space-y-1 text-center"
+                      className="h-auto py-3 flex flex-col items-center justify-center space-y-1 text-center hover:border-primary transition-all"
                     >
                       <span className="text-2xl">{item.icon}</span>
                       <span className="text-xs">{item.name}</span>
@@ -289,7 +288,7 @@ const CreateListing = () => {
                                     className="w-full h-full object-cover rounded-md"
                                   />
                                   <div {...providedDrag.dragHandleProps} className="absolute top-1 left-1 p-1 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
-                                     <GripVertical className="h-4 w-4 text-white" />
+                                    <GripVertical className="h-4 w-4 text-white" />
                                   </div>
                                   <Button
                                     type="button"
@@ -305,25 +304,25 @@ const CreateListing = () => {
                             </Draggable>
                           ))}
                           {provided.placeholder}
-                           <Label htmlFor="photo-upload" className="w-40 h-40 shrink-0 flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground rounded-md cursor-pointer hover:border-primary transition-colors">
-                              <UploadCloud className="h-10 w-10 text-muted-foreground mb-2" />
-                              <span className="text-sm text-muted-foreground">Upload Photos</span>
-                              <Input
-                                id="photo-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleUploadPhotos}
-                                multiple
-                                className="hidden"
-                              />
-                            </Label>
+                          <Label htmlFor="photo-upload" className="w-40 h-40 shrink-0 flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground rounded-md cursor-pointer hover:border-primary transition-colors">
+                            <UploadCloud className="h-10 w-10 text-muted-foreground mb-2" />
+                            <span className="text-sm text-muted-foreground">Upload Photos</span>
+                            <Input
+                              id="photo-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleUploadPhotos}
+                              multiple
+                              className="hidden"
+                            />
+                          </Label>
                         </div>
                         <ScrollBar orientation="horizontal" />
                       </ScrollArea>
                     )}
                   </Droppable>
                 </DragDropContext>
-                 {photos.length > 0 && <p className="text-xs text-muted-foreground mt-2">Drag to reorder photos.</p>}
+                {photos.length > 0 && <p className="text-xs text-muted-foreground mt-2">Drag to reorder photos.</p>}
               </div>
 
               <div>

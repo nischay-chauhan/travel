@@ -21,7 +21,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Minus, Heart } from "lucide-react"; // For amenity fallback
+import { Minus, Heart, MessageCircle } from "lucide-react"; // For amenity fallback
 import { setWishList } from "../redux/state";
 
 const ListingDetails = () => {
@@ -29,8 +29,9 @@ const ListingDetails = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { listingId } = useParams();
-  const [listing, setListing] = useState(null); 
+  const [listing, setListing] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -42,7 +43,7 @@ const ListingDetails = () => {
   const customerId = useSelector((state) => state?.user?._id);
   console.log(customerId)
   const token = useSelector((state) => state?.token);
-  console.log(token)  
+  console.log(token)
   const wishlist = useSelector((state) => state.user?.wishList || []);
 
   useEffect(() => {
@@ -79,6 +80,35 @@ const ListingDetails = () => {
     }
   };
 
+
+
+  const handleChat = async () => {
+    if (!customerId) {
+      toast.error("Please login to chat with owner");
+      return navigate("/login");
+    }
+
+    try {
+      await axios.post(
+        "/api/chat",
+        {
+          senderId: customerId,
+          receiverId: listing.creator._id,
+          propertyId: listingId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      navigate("/chats");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to start chat");
+    }
+  };
+
   useEffect(() => {
     const getListingDetails = async () => {
       setLoading(true);
@@ -96,7 +126,7 @@ const ListingDetails = () => {
         console.error("Failed to fetch listing details:", error);
         toast.error(
           error.response?.data?.message ||
-            "Error fetching listing details. Please try again later."
+          "Error fetching listing details. Please try again later."
         );
         navigate("/");
       } finally {
@@ -118,18 +148,22 @@ const ListingDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
+
     if (!customerId) {
       toast.error("Please login to book a property");
       return navigate("/login");
     }
 
     if (!listing || !listing.creator) {
-        toast.error("Host information is missing. Cannot proceed with booking.");
-        return;
+      toast.error("Host information is missing. Cannot proceed with booking.");
+      return;
     }
 
-    const currentDayCount = Math.max(1, dayCount); 
+    const currentDayCount = Math.max(1, dayCount);
 
+    setSubmitting(true);
     try {
       const bookingForm = {
         customerId,
@@ -150,13 +184,16 @@ const ListingDetails = () => {
           }
         }
       );
-      if (response.status === 200) { 
+      if (response.status === 200) {
         openRazorpayPaymentGateway(response.data);
       }
     } catch (error) {
       console.error("Booking submission failed:", error);
       toast.error(error.response?.data?.message || "Something went wrong while booking.");
+      setSubmitting(false); // Re-enable button on error
     }
+    // Note: Don't setSubmitting(false) on success, as payment gateway will open
+    // It will be reset when user returns or page reloads
   };
 
   const openRazorpayPaymentGateway = (booking) => {
@@ -200,27 +237,29 @@ const ListingDetails = () => {
         color: "#F43F5E", // Example: Tailwind rose-500
       },
       modal: {
-        ondismiss: function() {
+        ondismiss: function () {
           toast.info("Payment was not completed.");
+          setSubmitting(false); // Re-enable button when modal is closed
         }
       }
     };
 
     if (window.Razorpay) {
       const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response){
+      rzp1.on('payment.failed', function (response) {
         toast.error(`Payment failed: ${response.error.description}`);
-        // Handle payment failure, e.g., update booking status on server
+        setSubmitting(false); // Re-enable button on payment failure
         axios.post(`/bookings/payment-failed`, {
-            bookingId: booking._id,
-            razorpayOrderId: response.error.metadata.order_id,
-            razorpayPaymentId: response.error.metadata.payment_id,
+          bookingId: booking._id,
+          razorpayOrderId: response.error.metadata.order_id,
+          razorpayPaymentId: response.error.metadata.payment_id,
         }).catch(err => console.error("Failed to update payment failure status", err));
       });
       rzp1.open();
     } else {
       console.error("Razorpay SDK not loaded");
       toast.error("Payment gateway is currently unavailable. Please try again later.");
+      setSubmitting(false); // Re-enable button if Razorpay not available
     }
   };
 
@@ -272,7 +311,7 @@ const ListingDetails = () => {
                 <CarouselItem key={index}>
                   <div className="aspect-[16/9] w-full"> {/* Maintain aspect ratio */}
                     <img
-                      src={`/${photo.replace("public", "")}`}
+                      src={`${photo.replace("public", "")}`}
                       alt={`Listing photo ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -294,23 +333,20 @@ const ListingDetails = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column: Details & Host Info */}
           <div className="md:col-span-2 space-y-6">
-            {/* Guest Info */}
             <p className="text-lg text-foreground">
               {listing.guestCount} guests - {listing.bedroomCount} bedroom(s) -{" "}
               {listing.bedCount} bed(s) - {listing.bathroomCount} bathroom(s)
             </p>
             <Separator />
 
-            {/* Host Info */}
             {listing.creator && (
               <div className="flex items-center space-x-4">
                 <Avatar className="h-14 w-14">
                   <AvatarImage
                     src={listing.creator.profileImagePath
-                           ? `/${listing.creator.profileImagePath.replace("public", "")}`
-                           : undefined }
+                      ? `${listing.creator.profileImagePath.replace("public", "")}`
+                      : undefined}
                     alt={`${listing.creator.firstName} ${listing.creator.lastName}`}
                   />
                   <AvatarFallback>
@@ -324,6 +360,12 @@ const ListingDetails = () => {
                   </h3>
                 </div>
               </div>
+            )}
+            {listing.creator && listing.creator._id !== customerId && (
+              <Button onClick={handleChat} className="w-full md:w-auto gap-2">
+                <MessageCircle className="w-4 h-4" />
+                Chat with Owner
+              </Button>
             )}
             <Separator />
             <div>
@@ -341,13 +383,11 @@ const ListingDetails = () => {
               </div>
             )}
             <Separator />
-
-            {/* Amenities */}
             <div>
               <h3 className="text-xl font-semibold mb-3">What this place offers</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
                 {listing.amenities && listing.amenities[0] && typeof listing.amenities[0] === 'string'
-                 ? listing.amenities[0].split(",").map((item, index) => {
+                  ? listing.amenities[0].split(",").map((item, index) => {
                     const facility = facilities.find(
                       (facility) => facility.name === item.trim()
                     );
@@ -358,13 +398,13 @@ const ListingDetails = () => {
                       </div>
                     );
                   })
-                 : <p className="text-muted-foreground">No amenities listed.</p>}
+                  : <p className="text-muted-foreground">No amenities listed.</p>}
               </div>
             </div>
           </div>
 
           <div className="md:col-span-1">
-            <Card className="sticky top-24 shadow-lg"> 
+            <Card className="sticky top-24 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Book your stay</CardTitle>
               </CardHeader>
@@ -375,8 +415,8 @@ const ListingDetails = () => {
                     onChange={handleSelect}
                     moveRangeOnFirstSelection={false}
                     ranges={dateRange}
-                    className="w-full" 
-                    minDate={new Date()} 
+                    className="w-full"
+                    minDate={new Date()}
                   />
                 </div>
                 <Separator />
@@ -403,9 +443,9 @@ const ListingDetails = () => {
                 <Button
                   className="w-full text-lg py-6"
                   onClick={handleSubmit}
-                  disabled={loading || !customerId || dayCount <= 0}
+                  disabled={submitting || loading || !customerId || dayCount <= 0}
                 >
-                  {customerId ? 'Request to Book' : 'Login to Book'}
+                  {submitting ? 'Processing...' : (customerId ? 'Request to Book' : 'Login to Book')}
                 </Button>
               </CardFooter>
             </Card>

@@ -18,7 +18,6 @@ const Footer = () => {
 
   return (
     <footer className="relative py-20 border-t border-neon-blue/20">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
       <motion.div
         className="absolute top-0 left-1/2 transform -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-neon-blue to-transparent"
@@ -35,7 +34,6 @@ const Footer = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
-          {/* Brand Section */}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -65,8 +63,6 @@ const Footer = () => {
               </div>
             </motion.div>
           </div>
-
-          {/* Links Sections */}
           {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
             <motion.div
               key={category}
@@ -97,7 +93,6 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Newsletter Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -126,7 +121,6 @@ const Footer = () => {
           </div>
         </motion.div>
 
-        {/* Copyright */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
