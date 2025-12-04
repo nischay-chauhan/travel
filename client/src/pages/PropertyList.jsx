@@ -6,20 +6,19 @@ import { useEffect, useState } from "react";
 import { setPropertyList } from "../redux/state";
 import Loader from "../components/Loader";
 import axios from "axios";
-import { Home } from "lucide-react"; // For empty state icon
+import { Home } from "lucide-react"; 
 import { toast } from "react-hot-toast";
 
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => state.user);
-  // Ensure propertyList is always an array, even if user or user.propertyList is null/undefined
   const propertyList = useSelector((state) => state.user?.propertyList || []);
   const dispatch = useDispatch();
 
   const getPropertyList = async () => {
-    if (!user?._id) { // Guard clause if user is not available (e.g., logged out)
+    if (!user?._id) {
       setLoading(false);
-      dispatch(setPropertyList([])); // Clear any existing properties
+      dispatch(setPropertyList([])); 
       return;
     }
     setLoading(true);
@@ -31,7 +30,7 @@ const PropertyList = () => {
     } catch (err) {
       console.error("Fetch all properties failed:", err.message);
       toast.error("Failed to fetch your properties.");
-      dispatch(setPropertyList([])); // Clear properties on error
+      dispatch(setPropertyList([])); 
     } finally {
       setLoading(false);
     }
@@ -40,7 +39,7 @@ const PropertyList = () => {
   useEffect(() => {
     getPropertyList();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id, dispatch]); // Depend on user._id and dispatch
+  }, [user?._id, dispatch]); 
 
   if (loading) {
     return <Loader />;

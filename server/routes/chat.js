@@ -5,12 +5,17 @@ const router = express.Router();
 
 // Create a new chat or return existing one
 router.post("/", async (req, res) => {
-    const { senderId, receiverId } = req.body;
+    const { senderId, receiverId, propertyId } = req.body;
     try {
-        // Check if a chat already exists between these two users
-        const existingChat = await Chat.findOne({
+        const searchCriteria = {
             members: { $all: [senderId, receiverId] },
-        });
+        };
+
+        if (propertyId) {
+            searchCriteria.property = propertyId;
+        }
+
+        const existingChat = await Chat.findOne(searchCriteria);
 
         if (existingChat) {
             return res.status(200).json(existingChat);
@@ -18,6 +23,7 @@ router.post("/", async (req, res) => {
 
         const newChat = new Chat({
             members: [senderId, receiverId],
+            property: propertyId || null,
         });
         const savedChat = await newChat.save();
         res.status(200).json(savedChat);
@@ -31,7 +37,10 @@ router.get("/:userId", async (req, res) => {
     try {
         const chats = await Chat.find({
             members: { $in: [req.params.userId] },
-        }).populate("members", "firstName lastName profileImagePath");
+        })
+            .populate("members", "firstName lastName profileImagePath")
+            .populate("messages.sender", "firstName lastName profileImagePath")
+            .populate("property", "title city province country listingPhotoPaths price");
         res.status(200).json(chats);
     } catch (err) {
         res.status(500).json(err);

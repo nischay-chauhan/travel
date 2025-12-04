@@ -1,5 +1,8 @@
-import express from "express";
 import dotenv from "dotenv";
+// Load environment variables FIRST before any other imports
+dotenv.config();
+
+import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import listingRoutes from "./routes/listing.js";
@@ -11,8 +14,6 @@ import http from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -45,7 +46,6 @@ app.use(express.static(distPath));
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
-  // Listen for user registration event
   socket.on("registerUser", (userId) => {
     if (userId) {
       userSockets[userId] = socket.id;
@@ -56,7 +56,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Listen for sending a message
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
     const receiverSocketId = userSockets[receiverId];
     if (receiverSocketId) {
@@ -70,7 +69,6 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
-    // Find and remove user from userSockets map
     for (const userId in userSockets) {
       if (userSockets[userId] === socket.id) {
         delete userSockets[userId];
@@ -84,11 +82,10 @@ io.on('connection', (socket) => {
 
 app.use((req, res, next) => {
   req.io = io;
-  req.userSockets = userSockets; // Make userSockets available in request object
+  req.userSockets = userSockets; 
   next();
 });
 
-// Optional: Test endpoint to see current userSockets (for debugging)
 app.get("/test-usersockets", (req, res) => {
   res.json(req.userSockets || {});
 });

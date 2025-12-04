@@ -1,4 +1,4 @@
-import { createBrowserRouter , RouterProvider } from "react-router-dom"
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import RootLayout from "./layouts/RootLayout"; // Import RootLayout
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -11,11 +11,18 @@ import WishList from "./pages/WishList";
 import PropertyList from "./pages/PropertyList";
 import ReservationList from "./pages/ReservationList";
 import CategoryPage from "./pages/CategoryPage";
+import ChatPage from "./pages/ChatPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import { useEffect } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from "react-redux";
 import OtpVerificationPage from "./components/OtpVerificationPage";
+
+// Protected Route Component
+const ProtectedChatRoute = () => {
+  const user = useSelector((state) => state.user);
+  return user ? <ChatPage /> : <Navigate to="/login" replace />;
+};
 
 const router = createBrowserRouter([
   {
@@ -33,6 +40,7 @@ const router = createBrowserRouter([
       { path: ":userId/properties", element: <PropertyList /> },
       { path: ":userId/reservation", element: <ReservationList /> },
       { path: "notifications", element: <NotificationsPage /> },
+      { path: "chats", element: <ProtectedChatRoute /> },
       { path: "verify-otp", element: <OtpVerificationPage /> },
     ]
   }
@@ -42,12 +50,9 @@ const App = () => {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    // Ensure socket connection is only established if user is logged in,
-    // or adjust server-side to handle anonymous sockets gracefully if needed.
-    // For now, connecting anyway and registering if user exists.
     const socket = io({
-      reconnectionAttempts: 3, // Example: limit reconnection attempts
-      timeout: 10000, // Example: connection timeout
+      reconnectionAttempts: 3,
+      timeout: 10000,
     });
 
     socket.on('connect', () => {
@@ -59,18 +64,9 @@ const App = () => {
     });
 
     socket.on('newBooking', (data) => {
-      // The server now sends a targeted message.
-      // No need to check hostId === user._id here if server does it right.
-      // However, if App.jsx socket is for *any* logged-in user, this check might still be relevant
-      // if the `registerUser` event is the *only* thing that makes notifications targeted.
-      // Given the task, the server *should* only send this to the correct host via their socketId.
       console.log("Received newBooking event:", data);
       sonnerToast.success(data.message || "You have a new booking!", {
         description: `Booking ID: ${data.bookingDetails?._id || 'N/A'}`,
-        // action: {
-        //   label: 'View',
-        //   onClick: () => navigate(`/path/to/booking/${data.bookingDetails?._id}`), // TODO: Update path
-        // },
       });
     });
 
@@ -86,21 +82,21 @@ const App = () => {
       console.log('Cleaning up socket connection.');
       socket.disconnect();
     };
-  }, [user?._id]); // Re-run effect if user._id changes (login/logout)
+  }, [user?._id]); 
 
   return (
     <>
-    <div className="min-h-screen bg-background text-foreground">
-    <RouterProvider router={router} />
-    <Toaster position="top-right" toastOptions={{
-      className: "bg-card text-card-foreground",
-      style: {
-        borderRadius: "var(--radius)",
-        background: "hsl(var(--card))",
-        color: "hsl(var(--card-foreground))"
-      }
-    }} />
-  </div>
+      <div className="min-h-screen bg-background text-foreground">
+        <RouterProvider router={router} />
+        <Toaster position="top-right" toastOptions={{
+          className: "bg-card text-card-foreground",
+          style: {
+            borderRadius: "var(--radius)",
+            background: "hsl(var(--card))",
+            color: "hsl(var(--card-foreground))"
+          }
+        }} />
+      </div>
     </>
   )
 }

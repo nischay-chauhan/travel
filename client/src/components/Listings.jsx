@@ -36,6 +36,7 @@ const Listings = () => {
       );
 
       const data = await response.json();
+      console.log(data);
       dispatch(setListings({ listings: data }));
       console.log(listings);
       setLoading(false);
@@ -55,9 +56,8 @@ const Listings = () => {
           <div
             key={index}
             onClick={() => setSelectedCategory(category.label)}
-            className={`flex flex-col text-center hover:cursor-pointer items-center justify-center h-32 w-32 p-4 rounded-md hover:scale-105 transition-all duration-300 ${
-              category.label === selectedCategory ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            }`}
+            className={`flex flex-col text-center hover:cursor-pointer items-center justify-center h-32 w-32 p-4 rounded-md hover:scale-105 transition-all duration-300 ${category.label === selectedCategory ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
           >
             <div className="text-3xl"> {/* Icon inherits color */}
               {category.icon}
@@ -71,49 +71,52 @@ const Listings = () => {
         <Loader />
       ) : (
         <>
-        <div className="flex justify-center mt-10 p-4">
-         <h1 className="text-3xl font-bold text-foreground">Listings Presented By Others</h1>
-         </div>
-        <motion.div
-          className="grid grid-cols-2 mb-10 md:grid-cols-3 lg:grid-cols-4 gap-4"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {Array.isArray(listings.listings) ? (
-            listings.listings.map(
-              ({
-                _id,
-                creator,
-                listingPhotoPaths,
-                city,
-                province,
-                country,
-                category,
-                type,
-                price,
-                booking=false
-              }) => (
-                <ListingCard
-                  key={_id}
-                  listingId={_id}
-                  creator={creator}
-                  listingPhotoPaths={listingPhotoPaths}
-                  city={city}
-                  province={province}
-                  country={country}
-                  category={category}
-                  type={type}
-                  price={price}
-                  booking={booking}
-                  
-                />
-              )
-            )
+          <div className="flex justify-center mt-10 p-4">
+            <h1 className="text-3xl font-bold text-foreground">Listings Presented By Others</h1>
+          </div>
+          {Array.isArray(listings.listings) && listings.listings.length > 0 ? (
+            <motion.div
+              className="grid grid-cols-2 mb-10 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {listings.listings.map(
+                ({
+                  _id,
+                  creator,
+                  listingPhotoPaths,
+                  city,
+                  province,
+                  country,
+                  category,
+                  type,
+                  price,
+                  booking = false
+                }) => (
+                  <ListingCard
+                    key={_id}
+                    listingId={_id}
+                    creator={creator}
+                    listingPhotoPaths={listingPhotoPaths}
+                    city={city}
+                    province={province}
+                    country={country}
+                    category={category}
+                    type={type}
+                    price={price}
+                    booking={booking}
+
+                  />
+                )
+              )}
+            </motion.div>
           ) : (
-            <p>Error: Invalid listings format</p>
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <p className="text-2xl font-semibold text-muted-foreground mb-2">No properties available</p>
+              <p className="text-sm text-muted-foreground">Try selecting a different category or check back later</p>
+            </div>
           )}
-        </motion.div>
         </>
       )}
     </>

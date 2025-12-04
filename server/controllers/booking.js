@@ -34,15 +34,13 @@ export const createBooking = async (req, res) => {
       razorpayOrderId: order.id
     });
     await newBooking.save();
-
-    // Populate related fields to include in the notification and response
     await newBooking.populate([
       { path: "customerId", select: "username profileImagePath" },
       { path: "listingId", select: "title listingPhotoPaths city country type price" },
-      { path: "hostId", select: "username" } // Ensure hostId itself is populated if needed, though we have hostId string
+      { path: "hostId", select: "username" }
     ]);
 
-    const hostIdString = newBooking.hostId._id.toString(); // hostId is populated, get its _id
+    const hostIdString = newBooking.hostId._id.toString();
     const userSockets = req.userSockets;
 
     if (userSockets && hostIdString && userSockets[hostIdString]) {
@@ -58,7 +56,7 @@ export const createBooking = async (req, res) => {
     
     res.status(200).json(newBooking);
   } catch (err) {
-    console.error("Error creating booking:", err); // Use console.error for errors
+    console.error("Error creating booking:", err);
     res.status(400).json({ message: "Failed to create a new Booking!", error: err.message });
   }
 };
