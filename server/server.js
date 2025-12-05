@@ -31,15 +31,19 @@ const io = new Server(server, {
 
 app.use(cors({ origin: isProd ? true : CLIENT_URL }));
 app.use(express.json());
-app.use(express.static('public'));
 
 connectDB();
 
 const PORT = process.env.PORT || 3001;
 
-// Serve Vite build in production
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Serve server's public folder (for uploaded images, etc.) at /public
+const publicPath = path.resolve(__dirname, "public");
+app.use('/public', express.static(publicPath));
+
+// Serve Vite build in production (client frontend)
 const distPath = path.resolve(__dirname, "../client/dist");
 app.use(express.static(distPath));
 
@@ -82,7 +86,7 @@ io.on('connection', (socket) => {
 
 app.use((req, res, next) => {
   req.io = io;
-  req.userSockets = userSockets; 
+  req.userSockets = userSockets;
   next();
 });
 
