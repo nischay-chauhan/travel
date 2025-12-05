@@ -1,7 +1,9 @@
 services:
-  # Backend API Service
+  # Full-stack Web Service
+  # This single service serves both the Express API and the built React frontend
+  # The backend (server.js) serves the client build from /client/dist
   - type: web
-    name: travel-api
+    name: travel-app
     runtime: node
     env: node
     region: singapore
