@@ -16,7 +16,9 @@ const ChatPage = () => {
     const socket = useRef();
 
     useEffect(() => {
-        const socketUrl = import.meta.env.VITE_API_URL || undefined;
+        // Use VITE_API_URL in development, or current origin in production
+        const socketUrl = import.meta.env.VITE_API_URL?.trim()
+            || (typeof window !== 'undefined' ? window.location.origin : undefined);
         socket.current = io(socketUrl);
         socket.current.emit("registerUser", user?._id);
 
